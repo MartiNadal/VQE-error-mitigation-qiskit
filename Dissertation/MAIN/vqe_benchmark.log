@@ -1,0 +1,678 @@
+19:16:35 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:35 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:36 | INFO | ============================================================
+19:16:36 | INFO | VQE Error Mitigation Benchmark
+19:16:36 | INFO | ============================================================
+19:16:43 | INFO | Benchmark: 45 tasks, 16 workers.
+19:16:45 | INFO | Pass: UnrollCustomDefinitions - 0.45657 (ms)
+19:16:45 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:45 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:45 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:45 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:45 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:45 | INFO | Pass: UnrollCustomDefinitions - 1.00279 (ms)
+19:16:45 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 1.00064 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.99897 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.99921 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 0.00000 (ms)
+19:16:46 | INFO | Pass: UnrollCustomDefinitions - 0.00000 (ms)
+19:16:46 | INFO | Pass: BasisTranslator - 1.00064 (ms)
+19:16:53 | INFO | START | N=2  h=0.5  L=1
+19:16:53 | INFO | START | N=2  h=1.0  L=1
+19:16:53 | INFO | START | N=2  h=1.0  L=2
+19:16:54 | INFO | START | N=2  h=0.5  L=2
+19:16:54 | INFO | START | N=2  h=1.0  L=3
+19:16:54 | INFO | START | N=2  h=0.5  L=3
+19:16:54 | INFO | START | N=2  h=2.0  L=3
+19:16:54 | INFO | START | N=2  h=2.0  L=1
+19:16:54 | INFO | START | N=2  h=2.0  L=2
+19:16:54 | INFO | START | N=4  h=1.0  L=3
+19:16:54 | INFO | START | N=4  h=0.5  L=3
+19:16:54 | INFO | START | N=4  h=0.5  L=2
+19:16:54 | INFO | START | N=4  h=0.5  L=1
+19:16:54 | INFO | START | N=4  h=1.0  L=2
+19:16:54 | INFO | START | N=4  h=1.0  L=1
+19:16:54 | INFO | START | N=4  h=2.0  L=1
+19:16:55 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:56 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:16:57 | INFO |   Optimising VQE...
+19:18:15 | INFO |   Restart 1/3: E=-2.390625  converged=True  nfev=29
+19:18:20 | INFO |   Restart 1/3: E=-1.511719  converged=True  nfev=33
+19:18:37 | INFO |   Restart 1/3: E=-2.617188  converged=True  nfev=36
+19:18:46 | INFO |   Restart 1/3: E=-1.154297  converged=True  nfev=39
+19:18:50 | INFO |   Restart 1/3: E=-4.431641  converged=True  nfev=42
+19:18:54 | INFO |   Restart 1/3: E=-2.109375  converged=True  nfev=42
+19:18:55 | INFO |   Restart 1/3: E=-1.149414  converged=True  nfev=43
+19:19:01 | INFO |   Restart 1/3: E=-1.513672  converged=True  nfev=42
+19:19:54 | INFO |   Restart 1/3: E=-1.258789  converged=True  nfev=59
+19:20:00 | INFO |   Restart 1/3: E=-3.773438  converged=True  nfev=57
+19:20:06 | INFO |   Restart 1/3: E=-1.736328  converged=True  nfev=63
+19:20:12 | INFO |   Restart 2/3: E=-1.451172  converged=True  nfev=31
+19:20:27 | INFO |   Restart 2/3: E=-2.480469  converged=True  nfev=34
+19:20:40 | INFO |   Restart 1/3: E=-3.986328  converged=True  nfev=69
+19:20:54 | INFO |   Restart 2/3: E=-1.115234  converged=True  nfev=31
+19:21:31 | INFO |   Restart 2/3: E=-1.941406  converged=True  nfev=40
+19:21:31 | INFO |   Restart 2/3: E=-4.117188  converged=True  nfev=42
+19:21:40 | INFO |   Restart 2/3: E=-1.133789  converged=True  nfev=42
+19:21:43 | INFO |   Restart 1/3: E=-2.828125  converged=True  nfev=86
+19:21:47 | INFO |   Restart 2/3: E=-3.960938  converged=True  nfev=47
+19:21:58 | INFO |   Restart 2/3: E=-1.534180  converged=True  nfev=44
+19:22:02 | INFO |   Restart 1/3: E=-3.107422  converged=True  nfev=90
+19:22:10 | INFO |   Restart 1/3: E=-2.974609  converged=True  nfev=89
+19:22:12 | INFO |   Restart 1/3: E=-2.445312  converged=True  nfev=94
+19:22:32 | INFO |   Restart 3/3: E=-1.552734  converged=True  nfev=36
+19:22:42 | INFO |   Restart 3/3: E=-2.333984  converged=True  nfev=33
+19:22:49 | INFO |   Restart 2/3: E=-2.400391  converged=True  nfev=41
+19:23:09 | INFO |   [raw] E=-1.4782 ±0.0033  rel_err=0.3389  discard=0.000
+19:23:18 | INFO |   [raw] E=-2.3300 ±0.0100  rel_err=0.4349  discard=0.000
+19:23:18 | INFO |   Restart 2/3: E=-1.748047  converged=True  nfev=51
+19:23:33 | INFO |   Restart 3/3: E=-1.189453  converged=True  nfev=42
+19:23:39 | INFO |   [readout] E=-1.6094 ±0.0036  rel_err=0.2803  discard=0.000
+19:23:43 | INFO |   Restart 3/3: E=-4.837891  converged=True  nfev=38
+19:23:47 | INFO |   Restart 2/3: E=-1.214844  converged=True  nfev=64
+19:23:49 | INFO |   [readout] E=-2.5241 ±0.0109  rel_err=0.3878  discard=0.000
+19:24:01 | INFO |   Restart 3/3: E=-0.931641  converged=True  nfev=42
+19:24:02 | INFO |   [raw] E=-1.0855 ±0.0034  rel_err=0.2324  discard=0.000
+19:24:05 | INFO |   [parity] E=-2.6698 ±0.0054  rel_err=0.1940  discard=0.339
+19:24:10 | INFO |   [raw] E=-4.6135 ±0.0054  rel_err=0.4492  discard=0.000
+19:24:16 | INFO |   [parity] E=-4.6892 ±0.0082  rel_err=0.1373  discard=0.378
+19:24:17 | INFO |   Restart 3/3: E=-2.918945  converged=True  nfev=42
+19:24:17 | INFO |   Restart 2/3: E=-3.794922  converged=True  nfev=65
+19:24:19 | INFO |   Restart 3/3: E=-2.888672  converged=True  nfev=46
+19:24:25 | INFO |   [raw] E=-1.0822 ±0.0033  rel_err=0.2348  discard=0.000
+19:24:25 | INFO |   Restart 3/3: E=-2.181641  converged=True  nfev=55
+19:24:27 | INFO |   [readout] E=-1.1916 ±0.0038  rel_err=0.1574  discard=0.000
+19:24:34 | INFO |   [readout] E=-4.9298 ±0.0057  rel_err=0.4115  discard=0.000
+19:24:36 | INFO |   Restart 3/3: E=-1.527344  converged=True  nfev=38
+19:24:41 | INFO |   [raw] E=-2.8031 ±0.0041  rel_err=0.1821  discard=0.000
+19:24:44 | INFO |   [raw] E=-3.8570 ±0.0059  rel_err=0.0645  discard=0.000
+19:24:48 | INFO |   [readout] E=-1.1770 ±0.0037  rel_err=0.1677  discard=0.000
+19:24:49 | INFO |   [raw] E=-2.0660 ±0.0045  rel_err=0.0760  discard=0.000
+19:24:52 | INFO |   [parity] E=-1.7554 ±0.0021  rel_err=0.2413  discard=0.324
+19:24:58 | INFO |   [parity] E=-4.7971 ±0.0129  rel_err=0.4273  discard=0.524
+19:25:00 | INFO |   [raw] E=-3.6529 ±0.0081  rel_err=0.2324  discard=0.000
+19:25:07 | INFO |   [readout] E=-3.0404 ±0.0044  rel_err=0.1128  discard=0.000
+19:25:10 | INFO |   [readout] E=-4.0732 ±0.0065  rel_err=0.0121  discard=0.000
+19:25:13 | INFO |   [parity] E=-1.7577 ±0.0023  rel_err=0.2429  discard=0.325
+19:25:14 | INFO |   [readout] E=-2.2207 ±0.0049  rel_err=0.0069  discard=0.000
+19:25:18 | INFO |   [zne] E=-1.4782 ±0.0075  rel_err=0.3389  discard=0.000
+19:25:28 | INFO |   [readout] E=-3.8859 ±0.0086  rel_err=0.1834  discard=0.000
+19:25:32 | INFO |   [zne] E=-2.3300 ±0.0229  rel_err=0.4349  discard=0.000
+19:25:33 | INFO |   Restart 3/3: E=-1.609375  converged=True  nfev=55
+19:25:34 | INFO |   [parity] E=-3.3296 ±0.0047  rel_err=0.0284  discard=0.365
+19:25:38 | INFO |   [parity] E=-4.9369 ±0.0027  rel_err=0.1974  discard=0.242
+19:25:40 | INFO |   [parity] E=-2.6915 ±0.0037  rel_err=0.2037  discard=0.161
+19:25:40 | INFO |   Restart 2/3: E=-2.642578  converged=True  nfev=83
+19:25:45 | INFO |   [ro+parity] E=-2.7675 ±0.0060  rel_err=0.2377  discard=0.319
+19:25:51 | INFO |   Restart 3/3: E=-1.102539  converged=True  nfev=51
+19:25:58 | INFO |   [parity] E=-4.3048 ±0.0122  rel_err=0.0954  discard=0.423
+19:26:01 | INFO |   [raw] E=-1.6454 ±0.0062  rel_err=0.2642  discard=0.000
+19:26:03 | INFO |   [ro+parity] E=-4.9358 ±0.0102  rel_err=0.1971  discard=0.361
+19:26:17 | INFO |   [zne] E=-1.0855 ±0.0078  rel_err=0.2324  discard=0.000
+19:26:18 | INFO |   Restart 2/3: E=-3.412109  converged=True  nfev=86
+19:26:18 | INFO |   [raw] E=-1.1598 ±0.0029  rel_err=0.1799  discard=0.000
+19:26:20 | INFO |   [zne] E=-4.6135 ±0.0124  rel_err=0.4492  discard=0.000
+19:26:26 | INFO |   [readout] E=-1.7548 ±0.0068  rel_err=0.2152  discard=0.000
+19:26:34 | INFO |   [zne] E=-1.0822 ±0.0076  rel_err=0.2348  discard=0.000
+19:26:42 | INFO |   [ro+parity] E=-1.7988 ±0.0022  rel_err=0.2719  discard=0.303
+19:26:43 | INFO |   Restart 3/3: E=-3.890625  converged=True  nfev=59
+19:26:43 | INFO |   [readout] E=-1.2889 ±0.0032  rel_err=0.0886  discard=0.000
+19:26:44 | INFO |   [ro+parity] E=-5.1502 ±0.0161  rel_err=0.3852  discard=0.529
+19:26:50 | INFO |   [parity] E=-2.9614 ±0.0013  rel_err=0.3244  discard=0.331
+19:26:56 | INFO |   [zne] E=-2.8031 ±0.0094  rel_err=0.1821  discard=0.000
+19:26:58 | INFO |   [zne] E=-2.0660 ±0.0104  rel_err=0.0760  discard=0.000
+19:26:59 | INFO |   [ro+parity] E=-1.7956 ±0.0024  rel_err=0.2697  discard=0.307
+19:27:00 | INFO |   [zne] E=-3.8570 ±0.0135  rel_err=0.0645  discard=0.000
+19:27:01 | INFO |   [ro+zne] E=-1.6094 ±0.0083  rel_err=0.2803  discard=0.000
+19:27:06 | INFO |   Restart 2/3: E=-3.753906  converged=True  nfev=109
+19:27:07 | INFO |   [parity] E=-1.5163 ±0.0029  rel_err=0.0722  discard=0.166
+19:27:07 | INFO |   [raw] E=-3.8508 ±0.0065  rel_err=0.0660  discard=0.000
+19:27:08 | INFO |   Restart 2/3: E=-2.942383  converged=True  nfev=112
+19:27:16 | INFO |   [zne] E=-3.6529 ±0.0185  rel_err=0.2324  discard=0.000
+19:27:22 | INFO |   [ro+zne] E=-2.5241 ±0.0249  rel_err=0.3878  discard=0.000
+19:27:22 | INFO |   [ro+parity] E=-3.4241 ±0.0053  rel_err=0.0009  discard=0.337
+19:27:23 | INFO |   [ro+parity] E=-2.6921 ±0.0037  rel_err=0.2040  discard=0.118
+19:27:27 | INFO |   [ro+parity] E=-4.9435 ±0.0028  rel_err=0.1990  discard=0.213
+19:27:33 | INFO |   [readout] E=-4.1109 ±0.0071  rel_err=0.0030  discard=0.000
+19:27:44 | INFO |   [ro+parity] E=-4.4717 ±0.0127  rel_err=0.0603  discard=0.408
+19:28:03 | INFO |   [parity] E=-4.8668 ±0.0029  rel_err=0.1804  discard=0.226
+19:28:05 | INFO |   [ro+zne] E=-4.9298 ±0.0131  rel_err=0.4115  discard=0.000
+19:28:06 | INFO |   [ro+zne] E=-1.1916 ±0.0087  rel_err=0.1574  discard=0.000
+19:28:10 | INFO |   [zne] E=-1.6454 ±0.0141  rel_err=0.2642  discard=0.000
+19:28:21 | INFO |   [ro+zne] E=-1.1770 ±0.0084  rel_err=0.1677  discard=0.000
+19:28:24 | INFO |   [parity+zne] E=-2.6698 ±0.0124  rel_err=0.1940  discard=0.339
+19:28:29 | INFO |   [zne] E=-1.1598 ±0.0067  rel_err=0.1799  discard=0.000
+19:28:34 | INFO |   Restart 3/3: E=-1.541016  converged=True  nfev=68
+19:28:35 | INFO |   [ro+parity] E=-2.9989 ±0.0013  rel_err=0.3412  discard=0.311
+19:28:44 | INFO |   [ro+zne] E=-2.2207 ±0.0112  rel_err=0.0069  discard=0.000
+19:28:47 | INFO |   [ro+zne] E=-3.0404 ±0.0101  rel_err=0.1128  discard=0.000
+19:28:47 | INFO |   [parity+zne] E=-4.6892 ±0.0187  rel_err=0.1373  discard=0.378
+19:28:50 | INFO |   [ro+zne] E=-4.0732 ±0.0148  rel_err=0.0121  discard=0.000
+19:28:51 | INFO |   [ro+parity] E=-1.5220 ±0.0030  rel_err=0.0762  discard=0.120
+19:28:57 | INFO |   [raw] E=-2.6950 ±0.0029  rel_err=0.2136  discard=0.000
+19:29:05 | INFO |   [ro+zne] E=-3.8859 ±0.0196  rel_err=0.1834  discard=0.000
+19:29:15 | INFO |   [zne] E=-3.8508 ±0.0149  rel_err=0.0660  discard=0.000
+19:29:16 | INFO |   [parity+zne] E=-4.7971 ±0.0295  rel_err=0.4273  discard=0.524
+19:29:18 | INFO |   [readout] E=-2.9309 ±0.0032  rel_err=0.1448  discard=0.000
+19:29:19 | INFO |   [parity+zne] E=-1.7554 ±0.0048  rel_err=0.2413  discard=0.324
+19:29:19 | INFO |   Restart 3/3: E=-3.160156  converged=True  nfev=72
+19:29:29 | INFO |   [parity+zne] E=-1.7577 ±0.0052  rel_err=0.2429  discard=0.325
+19:29:30 | INFO |   [ro+parity+zne] E=-2.7675 ±0.0136  rel_err=0.2377  discard=0.319
+19:29:30 | INFO | DONE  | N=2  h=1.0  L=1  (757.1 s)
+19:29:37 | INFO | START | N=4  h=2.0  L=2
+19:29:37 | INFO |   [ro+parity] E=-4.8756 ±0.0030  rel_err=0.1825  discard=0.190
+19:29:39 | INFO |   Optimising VQE...
+19:29:42 | INFO |   [ro+zne] E=-1.7548 ±0.0156  rel_err=0.2152  discard=0.000
+19:29:42 | INFO |   [parity] E=-3.1061 ±0.0039  rel_err=0.0936  discard=0.387
+19:29:44 | INFO |   [raw] E=-3.2297 ±0.0063  rel_err=0.3213  discard=0.000
+19:29:52 | INFO |   [parity+zne] E=-2.6915 ±0.0084  rel_err=0.2037  discard=0.161
+19:29:58 | INFO |   [ro+parity+zne] E=-4.9358 ±0.0233  rel_err=0.1971  discard=0.361
+19:29:58 | INFO | DONE  | N=2  h=2.0  L=1  (784.1 s)
+19:29:59 | INFO |   [parity+zne] E=-3.3296 ±0.0107  rel_err=0.0284  discard=0.365
+19:30:00 | INFO |   [ro+zne] E=-1.2889 ±0.0074  rel_err=0.0886  discard=0.000
+19:30:02 | INFO |   [parity+zne] E=-4.9369 ±0.0062  rel_err=0.1974  discard=0.242
+19:30:05 | INFO | START | N=4  h=2.0  L=3
+19:30:08 | INFO |   Optimising VQE...
+19:30:11 | INFO |   [readout] E=-3.4899 ±0.0067  rel_err=0.2666  discard=0.000
+19:30:22 | INFO |   [parity+zne] E=-4.3048 ±0.0278  rel_err=0.0954  discard=0.423
+19:30:34 | INFO |   [ro+parity+zne] E=-5.1502 ±0.0367  rel_err=0.3852  discard=0.529
+19:30:34 | INFO | DONE  | N=4  h=2.0  L=1  (819.2 s)
+19:30:40 | INFO |   [ro+parity+zne] E=-1.7988 ±0.0051  rel_err=0.2719  discard=0.303
+19:30:40 | INFO | DONE  | N=2  h=0.5  L=1  (827.2 s)
+19:30:42 | INFO | START | N=6  h=0.5  L=1
+19:30:42 | INFO |   [parity] E=-3.8856 ±0.0120  rel_err=0.1835  discard=0.463
+19:30:45 | INFO |   Optimising VQE...
+19:30:47 | INFO |   [ro+parity+zne] E=-1.7956 ±0.0056  rel_err=0.2697  discard=0.307
+19:30:47 | INFO | DONE  | N=2  h=0.5  L=2  (833.7 s)
+19:30:48 | INFO | START | N=6  h=0.5  L=2
+19:30:51 | INFO |   Optimising VQE...
+19:30:54 | INFO | START | N=6  h=0.5  L=3
+19:30:57 | INFO |   Optimising VQE...
+19:30:59 | INFO |   [ro+zne] E=-4.1109 ±0.0163  rel_err=0.0030  discard=0.000
+19:31:01 | INFO |   [parity+zne] E=-2.9614 ±0.0031  rel_err=0.3244  discard=0.331
+19:31:03 | INFO |   [zne] E=-2.6950 ±0.0065  rel_err=0.2136  discard=0.000
+19:31:12 | INFO |   [ro+parity+zne] E=-2.6921 ±0.0084  rel_err=0.2040  discard=0.118
+19:31:12 | INFO | DONE  | N=2  h=1.0  L=2  (858.8 s)
+19:31:18 | INFO |   [parity+zne] E=-1.5163 ±0.0067  rel_err=0.0722  discard=0.166
+19:31:18 | INFO | START | N=6  h=1.0  L=1
+19:31:20 | INFO |   Optimising VQE...
+19:31:23 | INFO |   [ro+parity+zne] E=-3.4241 ±0.0120  rel_err=0.0009  discard=0.337
+19:31:23 | INFO | DONE  | N=4  h=0.5  L=1  (868.5 s)
+19:31:23 | INFO |   [ro+parity+zne] E=-4.9435 ±0.0065  rel_err=0.1990  discard=0.213
+19:31:23 | INFO | DONE  | N=2  h=2.0  L=2  (868.7 s)
+19:31:26 | INFO |   [ro+parity] E=-3.1786 ±0.0045  rel_err=0.0725  discard=0.360
+19:31:29 | INFO | START | N=6  h=1.0  L=3
+19:31:29 | INFO | START | N=6  h=1.0  L=2
+19:31:31 | INFO |   Optimising VQE...
+19:31:31 | INFO |   Optimising VQE...
+19:31:40 | INFO |   [ro+parity+zne] E=-4.4717 ±0.0290  rel_err=0.0603  discard=0.408
+19:31:40 | INFO | DONE  | N=4  h=1.0  L=1  (885.9 s)
+19:31:46 | INFO | START | N=6  h=2.0  L=1
+19:31:49 | INFO |   Optimising VQE...
+19:31:55 | INFO |   [zne] E=-3.2297 ±0.0144  rel_err=0.3213  discard=0.000
+19:31:56 | INFO |   Restart 3/3: E=-4.042969  converged=True  nfev=120
+19:32:05 | INFO |   [parity+zne] E=-4.8668 ±0.0067  rel_err=0.1804  discard=0.226
+19:32:07 | INFO |   [ro+parity+zne] E=-2.9989 ±0.0030  rel_err=0.3412  discard=0.311
+19:32:07 | INFO | DONE  | N=2  h=1.0  L=3  (913.4 s)
+19:32:14 | INFO | START | N=6  h=2.0  L=2
+19:32:15 | INFO |   Restart 3/3: E=-2.909180  converged=True  nfev=126
+19:32:16 | INFO |   Optimising VQE...
+19:32:20 | INFO |   [ro+parity] E=-4.0710 ±0.0137  rel_err=0.1445  discard=0.450
+19:32:20 | INFO |   [raw] E=-3.8591 ±0.0078  rel_err=0.1890  discard=0.000
+19:32:26 | INFO |   [ro+parity+zne] E=-1.5220 ±0.0069  rel_err=0.0762  discard=0.120
+19:32:26 | INFO | DONE  | N=2  h=0.5  L=3  (932.0 s)
+19:32:32 | INFO | START | N=6  h=2.0  L=3
+19:32:34 | INFO |   [ro+zne] E=-2.9309 ±0.0072  rel_err=0.1448  discard=0.000
+19:32:35 | INFO |   Optimising VQE...
+19:32:41 | INFO |   [raw] E=-2.9663 ±0.0039  rel_err=0.1344  discard=0.000
+19:32:46 | INFO |   [readout] E=-4.0963 ±0.0084  rel_err=0.1392  discard=0.000
+19:33:09 | INFO |   [readout] E=-3.2188 ±0.0041  rel_err=0.0608  discard=0.000
+19:33:14 | INFO |   [parity] E=-5.1413 ±0.0110  rel_err=0.0804  discard=0.427
+19:33:25 | INFO |   [ro+parity+zne] E=-4.8756 ±0.0069  rel_err=0.1825  discard=0.190
+19:33:25 | INFO | DONE  | N=2  h=2.0  L=3  (990.6 s)
+19:33:32 | INFO | START | N=8  h=0.5  L=1
+19:33:32 | INFO |   Restart 1/3: E=-6.849609  converged=True  nfev=94
+19:33:33 | INFO |   Restart 1/3: E=-3.831055  converged=True  nfev=70
+19:33:34 | INFO |   Optimising VQE...
+19:33:36 | INFO |   [parity] E=-3.4503 ±0.0058  rel_err=0.0068  discard=0.352
+19:33:42 | INFO |   Restart 1/3: E=-3.738281  converged=True  nfev=58
+19:33:43 | INFO |   [ro+zne] E=-3.4899 ±0.0152  rel_err=0.2666  discard=0.000
+19:33:53 | INFO |   [parity+zne] E=-3.1061 ±0.0089  rel_err=0.0936  discard=0.387
+19:34:25 | INFO |   [zne] E=-3.8591 ±0.0178  rel_err=0.1890  discard=0.000
+19:34:34 | INFO |   Restart 1/3: E=-6.392578  converged=True  nfev=66
+19:34:46 | INFO |   [zne] E=-2.9663 ±0.0088  rel_err=0.1344  discard=0.000
+19:34:49 | INFO |   [ro+parity] E=-5.4296 ±0.0114  rel_err=0.1410  discard=0.413
+19:34:55 | INFO |   [parity+zne] E=-3.8856 ±0.0274  rel_err=0.1835  discard=0.463
+19:35:05 | INFO |   [ro+parity+zne] E=-3.1786 ±0.0103  rel_err=0.0725  discard=0.360
+19:35:05 | INFO | DONE  | N=4  h=0.5  L=2  (1090.3 s)
+19:35:11 | INFO | START | N=8  h=0.5  L=2
+19:35:12 | INFO |   [ro+parity] E=-3.5316 ±0.0066  rel_err=0.0305  discard=0.320
+19:35:14 | INFO |   Optimising VQE...
+19:35:20 | INFO |   Restart 1/3: E=-6.498047  converged=True  nfev=119
+19:35:54 | INFO |   Restart 1/3: E=-3.159180  converged=True  nfev=122
+19:36:06 | INFO |   Restart 2/3: E=-2.568359  converged=True  nfev=59
+19:36:06 | INFO |   [ro+zne] E=-4.0963 ±0.0192  rel_err=0.1392  discard=0.000
+19:36:15 | INFO |   [ro+parity+zne] E=-4.0710 ±0.0312  rel_err=0.1445  discard=0.450
+19:36:15 | INFO | DONE  | N=4  h=1.0  L=2  (1160.3 s)
+19:36:17 | INFO |   Restart 2/3: E=-4.310547  converged=True  nfev=70
+19:36:20 | INFO |   Restart 1/3: E=-5.314453  converged=True  nfev=117
+19:36:22 | INFO | START | N=8  h=0.5  L=3
+19:36:26 | INFO |   Optimising VQE...
+19:36:31 | INFO |   [ro+zne] E=-3.2188 ±0.0095  rel_err=0.0608  discard=0.000
+19:36:57 | INFO |   Restart 1/3: E=-4.420898  converged=True  nfev=79
+19:36:59 | INFO |   Restart 1/3: E=-8.031250  converged=True  nfev=113
+19:37:00 | INFO |   Restart 2/3: E=-6.630859  converged=True  nfev=83
+19:37:35 | INFO |   Restart 2/3: E=-7.072266  converged=True  nfev=61
+19:37:46 | INFO |   [parity+zne] E=-5.1413 ±0.0251  rel_err=0.0804  discard=0.427
+19:38:23 | INFO |   [parity+zne] E=-3.4503 ±0.0134  rel_err=0.0068  discard=0.352
+19:39:15 | INFO |   Restart 3/3: E=-1.489258  converged=True  nfev=49
+19:39:24 | INFO |   Restart 1/3: E=-3.497070  converged=True  nfev=182
+19:39:30 | INFO |   Restart 1/3: E=-5.083984  converged=True  nfev=165
+19:39:31 | INFO |   [ro+parity+zne] E=-5.4296 ±0.0261  rel_err=0.1410  discard=0.413
+19:39:31 | INFO | DONE  | N=4  h=1.0  L=3  (1357.2 s)
+19:39:42 | INFO | START | N=8  h=1.0  L=1
+19:39:45 | INFO |   [raw] E=-4.2059 ±0.0057  rel_err=0.2383  discard=0.000
+19:39:47 | INFO |   Optimising VQE...
+19:40:10 | INFO |   [ro+parity+zne] E=-3.5316 ±0.0150  rel_err=0.0305  discard=0.320
+19:40:10 | INFO | DONE  | N=4  h=0.5  L=3  (1395.5 s)
+19:40:10 | INFO |   Restart 3/3: E=-4.236328  converged=True  nfev=70
+19:40:19 | INFO | START | N=8  h=1.0  L=2
+19:40:23 | INFO |   Optimising VQE...
+19:40:23 | INFO |   [readout] E=-5.0296 ±0.0079  rel_err=0.0892  discard=0.000
+19:40:48 | INFO |   [raw] E=-4.0729 ±0.0070  rel_err=0.4418  discard=0.000
+19:41:03 | INFO |   [parity] E=-4.8492 ±0.0086  rel_err=0.1218  discard=0.463
+19:41:06 | INFO |   Restart 3/3: E=-6.927734  converged=True  nfev=68
+19:41:16 | INFO |   Restart 2/3: E=-7.164062  converged=True  nfev=101
+19:41:29 | INFO |   [readout] E=-5.0553 ±0.0079  rel_err=0.3071  discard=0.000
+19:41:46 | INFO |   [raw] E=-6.6671 ±0.0129  rel_err=0.2041  discard=0.000
+19:42:03 | INFO |   Restart 3/3: E=-6.283203  converged=True  nfev=71
+19:42:09 | INFO |   [parity] E=-3.8054 ±0.0101  rel_err=0.4784  discard=0.519
+19:42:09 | INFO |   Restart 2/3: E=-5.902344  converged=True  nfev=83
+19:42:25 | INFO |   [readout] E=-7.0949 ±0.0139  rel_err=0.1530  discard=0.000
+19:42:30 | INFO |   Restart 1/3: E=-9.164062  converged=True  nfev=195
+19:42:46 | INFO |   [raw] E=-6.7979 ±0.0184  rel_err=0.4618  discard=0.000
+19:43:01 | INFO |   Restart 2/3: E=-3.851562  converged=True  nfev=106
+19:43:02 | INFO |   [zne] E=-4.2059 ±0.0131  rel_err=0.2383  discard=0.000
+19:43:05 | INFO |   [parity] E=-8.5994 ±0.0194  rel_err=0.0266  discard=0.407
+19:43:09 | INFO |   Restart 2/3: E=-5.392578  converged=True  nfev=103
+19:43:17 | INFO |   Restart 1/3: E=-5.311523  converged=True  nfev=136
+19:43:22 | INFO |   [readout] E=-8.3791 ±0.0206  rel_err=0.3366  discard=0.000
+19:43:30 | INFO |   [ro+parity] E=-5.6327 ±0.0148  rel_err=0.0200  discard=0.420
+19:43:44 | INFO |   Restart 2/3: E=-4.185547  converged=True  nfev=132
+19:43:46 | INFO |   [parity] E=-6.6679 ±0.0211  rel_err=0.4721  discard=0.516
+19:43:48 | INFO |   [zne] E=-4.0729 ±0.0160  rel_err=0.4418  discard=0.000
+19:44:11 | INFO |   Restart 1/3: E=-6.078125  converged=True  nfev=79
+19:44:12 | INFO |   [ro+parity] E=-4.7550 ±0.0165  rel_err=0.3483  discard=0.539
+19:44:20 | INFO |   [zne] E=-6.6671 ±0.0294  rel_err=0.2041  discard=0.000
+19:44:46 | INFO |   [ro+parity] E=-9.0243 ±0.0206  rel_err=0.0773  discard=0.383
+19:44:47 | INFO |   [ro+zne] E=-5.0296 ±0.0181  rel_err=0.0892  discard=0.000
+19:45:11 | INFO |   [zne] E=-6.7979 ±0.0420  rel_err=0.4618  discard=0.000
+19:45:39 | INFO |   [ro+zne] E=-5.0553 ±0.0182  rel_err=0.3071  discard=0.000
+19:45:39 | INFO |   [ro+parity] E=-8.3358 ±0.0274  rel_err=0.3401  discard=0.534
+19:46:05 | INFO |   [ro+zne] E=-7.0949 ±0.0319  rel_err=0.1530  discard=0.000
+19:46:06 | INFO |   [parity+zne] E=-4.8492 ±0.0198  rel_err=0.1218  discard=0.463
+19:46:07 | INFO |   Restart 3/3: E=-7.208984  converged=True  nfev=96
+19:46:21 | INFO |   Restart 3/3: E=-4.603516  converged=True  nfev=92
+19:46:30 | INFO |   [raw] E=-6.9379 ±0.0107  rel_err=0.1718  discard=0.000
+19:46:46 | INFO |   [raw] E=-5.7310 ±0.0083  rel_err=0.2499  discard=0.000
+19:46:49 | INFO |   [parity+zne] E=-3.8054 ±0.0231  rel_err=0.4784  discard=0.519
+19:46:54 | INFO |   [ro+zne] E=-8.3791 ±0.0471  rel_err=0.3366  discard=0.000
+19:46:55 | INFO |   [readout] E=-7.3561 ±0.0116  rel_err=0.1219  discard=0.000
+19:47:00 | INFO |   Restart 3/3: E=-8.003906  converged=True  nfev=98
+19:47:10 | INFO |   Restart 1/3: E=-4.405273  converged=True  nfev=193
+19:47:14 | INFO |   [readout] E=-7.2664 ±0.0094  rel_err=0.0490  discard=0.000
+19:47:20 | INFO |   [parity+zne] E=-8.5994 ±0.0443  rel_err=0.0266  discard=0.407
+19:47:21 | INFO |   [ro+parity+zne] E=-5.6327 ±0.0337  rel_err=0.0200  discard=0.420
+19:47:21 | INFO | DONE  | N=6  h=0.5  L=1  (999.5 s)
+19:47:27 | INFO |   [parity] E=-8.8509 ±0.0142  rel_err=0.0566  discard=0.393
+19:47:30 | INFO | START | N=8  h=1.0  L=3
+19:47:30 | INFO |   [raw] E=-7.7051 ±0.0145  rel_err=0.3900  discard=0.000
+19:47:32 | INFO |   Optimising VQE...
+19:47:47 | INFO |   [parity] E=-6.7749 ±0.0107  rel_err=0.1133  discard=0.425
+19:47:47 | INFO |   Restart 2/3: E=-6.392578  converged=True  nfev=85
+19:48:00 | INFO |   [readout] E=-8.9685 ±0.0146  rel_err=0.2900  discard=0.000
+19:48:11 | INFO |   Restart 3/3: E=-3.134766  converged=True  nfev=119
+19:48:16 | INFO |   Restart 2/3: E=-3.694336  converged=True  nfev=176
+19:48:19 | INFO |   Restart 1/3: E=-7.351562  converged=True  nfev=159
+19:48:21 | INFO |   [ro+parity+zne] E=-4.7550 ±0.0378  rel_err=0.3483  discard=0.539
+19:48:21 | INFO | DONE  | N=6  h=1.0  L=1  (1023.1 s)
+19:48:26 | INFO |   [parity+zne] E=-6.6679 ±0.0482  rel_err=0.4721  discard=0.516
+19:48:27 | INFO |   [parity] E=-8.4948 ±0.0182  rel_err=0.3275  discard=0.460
+19:48:28 | INFO | START | N=8  h=2.0  L=1
+19:48:30 | INFO |   Optimising VQE...
+19:48:36 | INFO |   [raw] E=-5.0488 ±0.0140  rel_err=0.3080  discard=0.000
+19:48:44 | INFO |   [ro+parity+zne] E=-9.0243 ±0.0471  rel_err=0.0773  discard=0.383
+19:48:44 | INFO | DONE  | N=4  h=2.0  L=2  (1147.3 s)
+19:48:48 | INFO |   Restart 2/3: E=-6.105469  converged=True  nfev=184
+19:48:50 | INFO | START | N=8  h=2.0  L=2
+19:48:52 | INFO |   [zne] E=-6.9379 ±0.0245  rel_err=0.1718  discard=0.000
+19:48:53 | INFO |   Optimising VQE...
+19:49:02 | INFO |   [readout] E=-5.9606 ±0.0186  rel_err=0.1831  discard=0.000
+19:49:10 | INFO |   [zne] E=-5.7310 ±0.0189  rel_err=0.2499  discard=0.000
+19:49:18 | INFO |   [ro+parity] E=-9.2449 ±0.0163  rel_err=0.1036  discard=0.368
+19:49:22 | INFO |   Restart 3/3: E=-4.446289  converged=True  nfev=131
+19:49:28 | INFO |   [parity] E=-5.6242 ±0.0237  rel_err=0.2292  discard=0.494
+19:49:39 | INFO |   [ro+parity] E=-7.8378 ±0.0261  rel_err=0.0258  discard=0.336
+19:49:39 | INFO |   Restart 2/3: E=-8.648438  converged=True  nfev=168
+19:49:43 | INFO |   [zne] E=-7.7051 ±0.0332  rel_err=0.3900  discard=0.000
+19:49:46 | INFO |   [ro+parity+zne] E=-8.3358 ±0.0627  rel_err=0.3401  discard=0.534
+19:49:46 | INFO | DONE  | N=6  h=2.0  L=1  (1080.0 s)
+19:49:51 | INFO |   [raw] E=-4.2990 ±0.0092  rel_err=0.2215  discard=0.000
+19:49:54 | INFO | START | N=8  h=2.0  L=3
+19:49:57 | INFO |   Optimising VQE...
+19:50:11 | INFO |   [ro+parity] E=-9.8988 ±0.0271  rel_err=0.2163  discard=0.416
+19:50:20 | INFO |   Restart 2/3: E=-5.208008  converged=True  nfev=162
+19:50:22 | INFO |   [readout] E=-5.2895 ±0.0119  rel_err=0.0421  discard=0.000
+19:50:44 | INFO |   [ro+zne] E=-7.3561 ±0.0265  rel_err=0.1219  discard=0.000
+19:50:48 | INFO |   [parity] E=-5.0805 ±0.0065  rel_err=0.0800  discard=0.437
+19:50:51 | INFO |   [zne] E=-5.0488 ±0.0321  rel_err=0.3080  discard=0.000
+19:51:02 | INFO |   [ro+zne] E=-7.2664 ±0.0215  rel_err=0.0490  discard=0.000
+19:51:16 | INFO |   [ro+parity] E=-6.9096 ±0.0371  rel_err=0.0530  discard=0.488
+19:51:20 | INFO |   Restart 3/3: E=-6.460938  converged=True  nfev=84
+19:51:25 | INFO |   [ro+zne] E=-8.9685 ±0.0333  rel_err=0.2900  discard=0.000
+19:51:47 | INFO |   Restart 1/3: E=-8.585938  converged=True  nfev=78
+19:51:48 | INFO |   [raw] E=-6.2187 ±0.0139  rel_err=0.3679  discard=0.000
+19:52:03 | INFO |   [parity+zne] E=-8.8509 ±0.0324  rel_err=0.0566  discard=0.393
+19:52:07 | INFO |   [zne] E=-4.2990 ±0.0210  rel_err=0.2215  discard=0.000
+19:52:16 | INFO |   [readout] E=-7.7219 ±0.0168  rel_err=0.2151  discard=0.000
+19:52:22 | INFO |   [parity+zne] E=-6.7749 ±0.0245  rel_err=0.1133  discard=0.425
+19:52:37 | INFO |   [ro+parity] E=-5.9311 ±0.0064  rel_err=0.0741  discard=0.362
+19:52:39 | INFO |   [ro+zne] E=-5.9606 ±0.0425  rel_err=0.1831  discard=0.000
+19:52:44 | INFO |   [parity] E=-6.6529 ±0.0162  rel_err=0.3238  discard=0.493
+19:52:47 | INFO |   [parity+zne] E=-8.4948 ±0.0415  rel_err=0.3275  discard=0.460
+19:53:24 | INFO |   [ro+parity+zne] E=-9.2449 ±0.0372  rel_err=0.1036  discard=0.368
+19:53:24 | INFO | DONE  | N=4  h=2.0  L=3  (1398.6 s)
+19:53:29 | INFO | START | N=10  h=0.5  L=1
+19:53:33 | INFO |   Optimising VQE...
+19:53:36 | INFO |   [ro+parity+zne] E=-7.8378 ±0.0596  rel_err=0.0258  discard=0.336
+19:53:36 | INFO | DONE  | N=8  h=0.5  L=1  (1204.4 s)
+19:53:42 | INFO | START | N=10  h=0.5  L=2
+19:53:46 | INFO |   Optimising VQE...
+19:53:50 | INFO |   [ro+zne] E=-5.2895 ±0.0272  rel_err=0.0421  discard=0.000
+19:53:50 | INFO |   [parity+zne] E=-5.6242 ±0.0542  rel_err=0.2292  discard=0.494
+19:53:53 | INFO |   [zne] E=-6.2187 ±0.0318  rel_err=0.3679  discard=0.000
+19:53:57 | INFO |   [ro+parity+zne] E=-9.8988 ±0.0620  rel_err=0.2163  discard=0.416
+19:53:57 | INFO | DONE  | N=6  h=2.0  L=2  (1303.5 s)
+19:54:03 | INFO | START | N=10  h=0.5  L=3
+19:54:07 | INFO |   Optimising VQE...
+19:54:19 | INFO |   [ro+parity] E=-8.4254 ±0.0309  rel_err=0.1436  discard=0.485
+19:54:35 | INFO |   Restart 2/3: E=-7.873047  converged=True  nfev=149
+19:55:03 | INFO |   Restart 2/3: E=-7.482422  converged=True  nfev=78
+19:55:08 | INFO |   Restart 3/3: E=-4.408203  converged=True  nfev=163
+19:55:09 | INFO |   [ro+parity+zne] E=-6.9096 ±0.0848  rel_err=0.0530  discard=0.488
+19:55:09 | INFO | DONE  | N=6  h=1.0  L=2  (1420.2 s)
+19:55:11 | INFO |   [parity+zne] E=-5.0805 ±0.0149  rel_err=0.0800  discard=0.437
+19:55:14 | INFO |   Restart 3/3: E=-4.074219  converged=True  nfev=151
+19:55:15 | INFO | START | N=10  h=1.0  L=1
+19:55:18 | INFO |   Optimising VQE...
+19:55:31 | INFO |   [raw] E=-4.2382 ±0.0097  rel_err=0.2325  discard=0.000
+19:55:34 | INFO |   [ro+zne] E=-7.7219 ±0.0384  rel_err=0.2151  discard=0.000
+19:55:38 | INFO |   [raw] E=-5.8547 ±0.0114  rel_err=0.1976  discard=0.000
+19:55:54 | INFO |   [readout] E=-5.0952 ±0.0125  rel_err=0.0773  discard=0.000
+19:56:01 | INFO |   [readout] E=-6.8029 ±0.0141  rel_err=0.0676  discard=0.000
+19:56:03 | INFO |   Restart 1/3: E=-10.894531  converged=True  nfev=175
+19:56:09 | INFO |   Restart 3/3: E=-4.675781  converged=True  nfev=143
+19:56:19 | INFO |   [parity] E=-4.9922 ±0.0142  rel_err=0.0959  discard=0.460
+19:56:20 | INFO |   Restart 3/3: E=-9.058594  converged=True  nfev=171
+19:56:24 | INFO |   [ro+parity+zne] E=-5.9311 ±0.0146  rel_err=0.0741  discard=0.362
+19:56:24 | INFO | DONE  | N=6  h=0.5  L=2  (1535.5 s)
+19:56:28 | INFO |   [parity] E=-6.6479 ±0.0178  rel_err=0.0889  discard=0.457
+19:56:31 | INFO | START | N=10  h=1.0  L=2
+19:56:35 | INFO |   Optimising VQE...
+19:56:36 | INFO |   [raw] E=-5.0805 ±0.0056  rel_err=0.3351  discard=0.000
+19:56:46 | INFO |   [raw] E=-8.8239 ±0.0189  rel_err=0.3014  discard=0.000
+19:56:48 | INFO |   [parity+zne] E=-6.6529 ±0.0369  rel_err=0.3238  discard=0.493
+19:57:05 | INFO |   [readout] E=-6.3693 ±0.0076  rel_err=0.1664  discard=0.000
+19:57:14 | INFO |   [readout] E=-10.3435 ±0.0208  rel_err=0.1811  discard=0.000
+19:57:15 | INFO |   Restart 2/3: E=-6.151367  converged=True  nfev=229
+19:57:30 | INFO |   [parity] E=-5.6820 ±0.0082  rel_err=0.2563  discard=0.478
+19:57:37 | INFO |   [parity] E=-10.0596 ±0.0338  rel_err=0.2036  discard=0.471
+19:57:39 | INFO |   [zne] E=-4.2382 ±0.0222  rel_err=0.2325  discard=0.000
+19:57:48 | INFO |   [zne] E=-5.8547 ±0.0261  rel_err=0.1976  discard=0.000
+19:57:55 | INFO |   Restart 1/3: E=-6.240234  converged=True  nfev=101
+19:58:00 | INFO |   [ro+parity] E=-5.9494 ±0.0181  rel_err=0.0774  discard=0.420
+19:58:04 | INFO |   [ro+parity+zne] E=-8.4254 ±0.0705  rel_err=0.1436  discard=0.485
+19:58:04 | INFO | DONE  | N=8  h=1.0  L=1  (1101.5 s)
+19:58:09 | INFO | START | N=10  h=1.0  L=3
+19:58:12 | INFO |   [ro+parity] E=-7.8401 ±0.0275  rel_err=0.0745  discard=0.414
+19:58:13 | INFO |   Optimising VQE...
+19:58:17 | INFO |   Restart 3/3: E=-6.886719  converged=True  nfev=81
+19:58:32 | INFO |   Restart 1/3: E=-6.761719  converged=True  nfev=258
+19:58:42 | INFO |   [raw] E=-8.3229 ±0.0206  rel_err=0.5071  discard=0.000
+19:58:43 | INFO |   [zne] E=-5.0805 ±0.0128  rel_err=0.3351  discard=0.000
+19:58:45 | INFO |   [zne] E=-8.8239 ±0.0432  rel_err=0.3014  discard=0.000
+19:59:08 | INFO |   [readout] E=-10.2598 ±0.0243  rel_err=0.3924  discard=0.000
+19:59:10 | INFO |   [ro+parity] E=-7.1517 ±0.0176  rel_err=0.0640  discard=0.453
+19:59:11 | INFO |   [ro+parity] E=-12.2395 ±0.0524  rel_err=0.0310  discard=0.441
+19:59:18 | INFO |   [ro+zne] E=-5.0952 ±0.0286  rel_err=0.0773  discard=0.000
+19:59:31 | INFO |   Restart 1/3: E=-8.392578  converged=True  nfev=103
+19:59:33 | INFO |   [ro+zne] E=-6.8029 ±0.0323  rel_err=0.0676  discard=0.000
+19:59:37 | INFO |   [parity] E=-8.2597 ±0.0406  rel_err=0.5108  discard=0.505
+20:00:10 | INFO |   Restart 1/3: E=-12.376953  converged=True  nfev=240
+20:00:25 | INFO |   [ro+zne] E=-10.3435 ±0.0474  rel_err=0.1811  discard=0.000
+20:00:29 | INFO |   [ro+zne] E=-6.3693 ±0.0173  rel_err=0.1664  discard=0.000
+20:00:35 | INFO |   [parity+zne] E=-4.9922 ±0.0325  rel_err=0.0959  discard=0.460
+20:00:48 | INFO |   [parity+zne] E=-6.6479 ±0.0406  rel_err=0.0889  discard=0.457
+20:00:50 | INFO |   [zne] E=-8.3229 ±0.0470  rel_err=0.5071  discard=0.000
+20:00:57 | INFO |   Restart 3/3: E=-6.951172  converged=True  nfev=158
+20:01:16 | INFO |   [ro+parity] E=-10.2243 ±0.0671  rel_err=0.3945  discard=0.510
+20:01:23 | INFO |   [raw] E=-7.5929 ±0.0133  rel_err=0.2282  discard=0.000
+20:01:36 | INFO |   Restart 1/3: E=-6.329102  converged=True  nfev=193
+20:01:38 | INFO |   [parity+zne] E=-10.0596 ±0.0771  rel_err=0.2036  discard=0.471
+20:01:42 | INFO |   Restart 2/3: E=-9.833984  converged=True  nfev=139
+20:01:48 | INFO |   [parity+zne] E=-5.6820 ±0.0188  rel_err=0.2563  discard=0.478
+20:01:52 | INFO |   [readout] E=-9.1208 ±0.0162  rel_err=0.0729  discard=0.000
+20:01:53 | INFO |   Restart 2/3: E=-6.895508  converged=True  nfev=92
+20:01:54 | INFO |   [ro+parity+zne] E=-5.9494 ±0.0413  rel_err=0.0774  discard=0.420
+20:01:54 | INFO | DONE  | N=6  h=0.5  L=3  (1859.6 s)
+20:02:01 | INFO | START | N=10  h=2.0  L=1
+20:02:04 | INFO |   Optimising VQE...
+20:02:09 | INFO |   [ro+parity+zne] E=-7.8401 ±0.0628  rel_err=0.0745  discard=0.414
+20:02:09 | INFO | DONE  | N=6  h=1.0  L=3  (1840.6 s)
+20:02:14 | INFO | START | N=10  h=2.0  L=2
+20:02:18 | INFO |   [parity] E=-7.9146 ±0.0241  rel_err=0.1955  discard=0.496
+20:02:18 | INFO |   Optimising VQE...
+20:02:35 | INFO |   [ro+zne] E=-10.2598 ±0.0555  rel_err=0.3924  discard=0.000
+20:02:49 | INFO |   [ro+parity+zne] E=-12.2395 ±0.1197  rel_err=0.0310  discard=0.441
+20:02:49 | INFO | DONE  | N=6  h=2.0  L=3  (1817.3 s)
+20:02:54 | INFO | START | N=10  h=2.0  L=3
+20:02:58 | INFO |   Optimising VQE...
+20:03:03 | INFO |   [ro+parity+zne] E=-7.1517 ±0.0402  rel_err=0.0640  discard=0.453
+20:03:03 | INFO | DONE  | N=8  h=0.5  L=2  (1672.0 s)
+20:03:30 | INFO |   [zne] E=-7.5929 ±0.0303  rel_err=0.2282  discard=0.000
+20:03:45 | INFO |   [parity+zne] E=-8.2597 ±0.0927  rel_err=0.5108  discard=0.505
+20:03:47 | INFO |   Restart 1/3: E=-7.005859  converged=True  nfev=169
+20:03:56 | INFO |   [ro+parity] E=-9.6522 ±0.0394  rel_err=0.0189  discard=0.491
+20:04:28 | INFO |   Restart 2/3: E=-6.634766  converged=True  nfev=122
+20:05:02 | INFO |   [ro+parity+zne] E=-10.2243 ±0.1532  rel_err=0.3945  discard=0.510
+20:05:02 | INFO | DONE  | N=8  h=2.0  L=1  (994.6 s)
+20:05:13 | INFO |   [ro+zne] E=-9.1208 ±0.0369  rel_err=0.0729  discard=0.000
+20:05:18 | INFO |   Restart 1/3: E=-6.861328  converged=True  nfev=285
+20:05:33 | INFO |   Restart 3/3: E=-5.968750  converged=True  nfev=206
+20:06:01 | INFO |   [raw] E=-5.8761 ±0.0096  rel_err=0.2309  discard=0.000
+20:06:31 | INFO |   Restart 3/3: E=-7.081055  converged=True  nfev=110
+20:06:34 | INFO |   [parity+zne] E=-7.9146 ±0.0550  rel_err=0.1955  discard=0.496
+20:06:34 | INFO |   [readout] E=-7.4093 ±0.0120  rel_err=0.0303  discard=0.000
+20:06:44 | INFO |   Restart 1/3: E=-10.746094  converged=True  nfev=117
+20:07:03 | INFO |   [parity] E=-6.6540 ±0.0146  rel_err=0.1291  discard=0.462
+20:07:10 | INFO |   [raw] E=-6.8046 ±0.0066  rel_err=0.3032  discard=0.000
+20:07:11 | INFO |   Restart 2/3: E=-7.062500  converged=True  nfev=209
+20:07:44 | INFO |   Restart 3/3: E=-11.355469  converged=True  nfev=149
+20:07:52 | INFO |   [readout] E=-7.7190 ±0.0067  rel_err=0.2096  discard=0.000
+20:08:09 | INFO |   [ro+parity+zne] E=-9.6522 ±0.0900  rel_err=0.0189  discard=0.491
+20:08:09 | INFO | DONE  | N=8  h=1.0  L=2  (1670.2 s)
+20:08:20 | INFO |   [raw] E=-10.9237 ±0.0227  rel_err=0.3531  discard=0.000
+20:08:40 | INFO |   [parity] E=-6.5112 ±0.0119  rel_err=0.3332  discard=0.520
+20:08:48 | INFO |   [zne] E=-5.8761 ±0.0219  rel_err=0.2309  discard=0.000
+20:08:52 | INFO |   [readout] E=-12.5291 ±0.0273  rel_err=0.2580  discard=0.000
+20:09:21 | INFO |   [ro+parity] E=-8.1227 ±0.0250  rel_err=0.0631  discard=0.412
+20:09:23 | INFO |   [parity] E=-11.2492 ±0.0228  rel_err=0.3338  discard=0.495
+20:09:31 | INFO |   Restart 3/3: E=-7.365234  converged=True  nfev=108
+20:09:36 | INFO |   Restart 2/3: E=-10.857422  converged=True  nfev=213
+20:09:54 | INFO |   Restart 2/3: E=-5.685547  converged=True  nfev=190
+20:10:14 | INFO |   [raw] E=-8.1486 ±0.0119  rel_err=0.3419  discard=0.000
+20:10:42 | INFO |   [zne] E=-6.8046 ±0.0150  rel_err=0.3032  discard=0.000
+20:10:48 | INFO |   [readout] E=-9.0056 ±0.0128  rel_err=0.2727  discard=0.000
+20:10:54 | INFO |   [zne] E=-10.9237 ±0.0519  rel_err=0.3531  discard=0.000
+20:10:57 | INFO |   [ro+zne] E=-7.4093 ±0.0275  rel_err=0.0303  discard=0.000
+20:11:05 | INFO |   Restart 1/3: E=-7.068359  converged=True  nfev=291
+20:11:31 | INFO |   [ro+parity] E=-13.0728 ±0.0295  rel_err=0.2258  discard=0.490
+20:11:32 | INFO |   Restart 2/3: E=-10.873047  converged=True  nfev=95
+20:11:32 | INFO |   [ro+parity] E=-7.1318 ±0.0297  rel_err=0.2697  discard=0.546
+20:11:36 | INFO |   [parity] E=-8.6056 ±0.0133  rel_err=0.3050  discard=0.480
+20:12:46 | INFO |   [parity+zne] E=-6.6540 ±0.0333  rel_err=0.1291  discard=0.462
+20:13:13 | INFO |   [ro+zne] E=-12.5291 ±0.0625  rel_err=0.2580  discard=0.000
+20:13:27 | INFO |   Restart 1/3: E=-17.371094  converged=True  nfev=228
+20:13:53 | INFO |   [ro+zne] E=-7.7190 ±0.0152  rel_err=0.2096  discard=0.000
+20:13:54 | INFO |   [zne] E=-8.1486 ±0.0273  rel_err=0.3419  discard=0.000
+20:14:21 | INFO |   Restart 2/3: E=-7.529297  converged=True  nfev=205
+20:14:37 | INFO |   [ro+parity+zne] E=-8.1227 ±0.0572  rel_err=0.0631  discard=0.412
+20:14:37 | INFO | DONE  | N=8  h=0.5  L=3  (2294.9 s)
+20:14:40 | INFO |   [ro+parity] E=-9.7466 ±0.0289  rel_err=0.2128  discard=0.454
+20:14:57 | INFO |   [parity+zne] E=-11.2492 ±0.0521  rel_err=0.3338  discard=0.495
+20:16:13 | INFO |   [parity+zne] E=-6.5112 ±0.0272  rel_err=0.3332  discard=0.520
+20:16:34 | INFO |   [ro+parity+zne] E=-13.0728 ±0.0673  rel_err=0.2258  discard=0.490
+20:16:34 | INFO | DONE  | N=8  h=2.0  L=2  (1663.8 s)
+20:16:50 | INFO |   Restart 3/3: E=-10.212891  converged=True  nfev=100
+20:16:52 | INFO |   [ro+zne] E=-9.0056 ±0.0293  rel_err=0.2727  discard=0.000
+20:17:17 | INFO |   Restart 1/3: E=-10.990234  converged=True  nfev=295
+20:17:28 | INFO |   [raw] E=-10.5880 ±0.0196  rel_err=0.4991  discard=0.000
+20:18:06 | INFO |   [readout] E=-11.9032 ±0.0216  rel_err=0.4369  discard=0.000
+20:18:14 | INFO |   [ro+parity+zne] E=-7.1318 ±0.0678  rel_err=0.2697  discard=0.546
+20:18:14 | INFO | DONE  | N=10  h=0.5  L=1  (1484.7 s)
+20:18:36 | INFO |   Restart 3/3: E=-5.829102  converged=True  nfev=172
+20:18:42 | INFO |   [parity] E=-10.5764 ±0.0255  rel_err=0.4997  discard=0.499
+20:18:46 | INFO |   [parity+zne] E=-8.6056 ±0.0304  rel_err=0.3050  discard=0.480
+20:19:15 | INFO |   [raw] E=-6.1430 ±0.0060  rel_err=0.3709  discard=0.000
+20:19:42 | INFO |   Restart 2/3: E=-7.641602  converged=False  nfev=300
+20:19:59 | INFO |   [readout] E=-7.3936 ±0.0084  rel_err=0.2429  discard=0.000
+20:20:32 | INFO |   Restart 3/3: E=-12.582031  converged=True  nfev=210
+20:20:34 | INFO |   [zne] E=-10.5880 ±0.0447  rel_err=0.4991  discard=0.000
+20:20:41 | INFO |   [ro+parity+zne] E=-9.7466 ±0.0660  rel_err=0.2128  discard=0.454
+20:20:41 | INFO | DONE  | N=10  h=1.0  L=1  (1525.7 s)
+20:20:41 | INFO |   [parity] E=-6.1908 ±0.0148  rel_err=0.3661  discard=0.494
+20:20:56 | INFO |   [raw] E=-12.1066 ±0.0173  rel_err=0.2830  discard=0.000
+20:21:05 | INFO |   [ro+parity] E=-11.8863 ±0.0432  rel_err=0.4377  discard=0.499
+20:21:07 | INFO |   Restart 3/3: E=-7.382812  converged=True  nfev=280
+20:21:20 | INFO |   [readout] E=-13.5688 ±0.0194  rel_err=0.1964  discard=0.000
+20:21:31 | INFO |   [raw] E=-7.0012 ±0.0148  rel_err=0.2883  discard=0.000
+20:21:45 | INFO |   [parity] E=-13.0854 ±0.0240  rel_err=0.2250  discard=0.472
+20:21:56 | INFO |   [readout] E=-8.3901 ±0.0179  rel_err=0.1472  discard=0.000
+20:22:20 | INFO |   [parity] E=-7.2030 ±0.0218  rel_err=0.2678  discard=0.490
+20:22:36 | INFO |   [zne] E=-6.1430 ±0.0137  rel_err=0.3709  discard=0.000
+20:22:41 | INFO |   [ro+zne] E=-11.9032 ±0.0492  rel_err=0.4369  discard=0.000
+20:22:47 | INFO |   Restart 3/3: E=-7.552734  converged=True  nfev=180
+20:23:04 | INFO |   [zne] E=-12.1066 ±0.0396  rel_err=0.2830  discard=0.000
+20:23:06 | INFO |   Restart 2/3: E=-12.679688  converged=True  nfev=202
+20:23:13 | INFO |   [ro+parity] E=-7.3800 ±0.0385  rel_err=0.2443  discard=0.486
+20:23:27 | INFO |   [raw] E=-7.3221 ±0.0129  rel_err=0.4086  discard=0.000
+20:23:31 | INFO |   [ro+parity] E=-14.8975 ±0.0437  rel_err=0.1177  discard=0.438
+20:23:38 | INFO |   [zne] E=-7.0012 ±0.0338  rel_err=0.2883  discard=0.000
+20:23:54 | INFO |   [readout] E=-8.3079 ±0.0149  rel_err=0.3290  discard=0.000
+20:23:56 | INFO |   [ro+parity] E=-8.6249 ±0.0351  rel_err=0.1233  discard=0.477
+20:24:08 | INFO |   [parity+zne] E=-10.5764 ±0.0582  rel_err=0.4997  discard=0.499
+20:24:28 | INFO |   Restart 2/3: E=-9.054688  converged=True  nfev=291
+20:24:29 | INFO |   [parity] E=-7.3569 ±0.0172  rel_err=0.4058  discard=0.497
+20:24:38 | INFO |   [ro+zne] E=-13.5688 ±0.0444  rel_err=0.1964  discard=0.000
+20:24:52 | INFO |   [ro+zne] E=-7.3936 ±0.0193  rel_err=0.2429  discard=0.000
+20:25:14 | INFO |   [ro+zne] E=-8.3901 ±0.0408  rel_err=0.1472  discard=0.000
+20:25:40 | INFO |   [ro+parity+zne] E=-11.8863 ±0.0986  rel_err=0.4377  discard=0.499
+20:25:40 | INFO | DONE  | N=10  h=2.0  L=1  (1418.9 s)
+20:25:54 | INFO |   [parity+zne] E=-13.0854 ±0.0549  rel_err=0.2250  discard=0.472
+20:26:17 | INFO |   [zne] E=-7.3221 ±0.0295  rel_err=0.4086  discard=0.000
+20:26:19 | INFO |   [parity+zne] E=-7.2030 ±0.0498  rel_err=0.2678  discard=0.490
+20:26:35 | INFO |   [parity+zne] E=-6.1908 ±0.0339  rel_err=0.3661  discard=0.494
+20:26:50 | INFO |   [ro+parity] E=-8.3606 ±0.0296  rel_err=0.3247  discard=0.494
+20:27:00 | INFO |   [ro+parity+zne] E=-14.8975 ±0.0999  rel_err=0.1177  discard=0.438
+20:27:00 | INFO | DONE  | N=8  h=2.0  L=3  (2226.1 s)
+20:27:22 | INFO |   [ro+parity+zne] E=-8.6249 ±0.0802  rel_err=0.1233  discard=0.477
+20:27:22 | INFO | DONE  | N=8  h=1.0  L=3  (2392.6 s)
+20:28:07 | INFO |   [ro+parity+zne] E=-7.3800 ±0.0880  rel_err=0.2443  discard=0.486
+20:28:07 | INFO | DONE  | N=10  h=0.5  L=2  (2065.1 s)
+20:28:21 | INFO |   [ro+zne] E=-8.3079 ±0.0340  rel_err=0.3290  discard=0.000
+20:28:24 | INFO |   Restart 3/3: E=-4.753906  converged=True  nfev=252
+20:28:32 | INFO |   Restart 2/3: E=-15.316406  converged=False  nfev=300
+20:28:54 | INFO |   [raw] E=-7.2955 ±0.0138  rel_err=0.2529  discard=0.000
+20:29:24 | INFO |   [readout] E=-8.5977 ±0.0174  rel_err=0.1196  discard=0.000
+20:29:45 | INFO |   [parity+zne] E=-7.3569 ±0.0394  rel_err=0.4058  discard=0.497
+20:29:54 | INFO |   [parity] E=-8.2878 ±0.0193  rel_err=0.1513  discard=0.452
+20:30:48 | INFO |   Restart 3/3: E=-14.847656  converged=True  nfev=237
+20:31:06 | INFO |   [ro+parity+zne] E=-8.3606 ±0.0676  rel_err=0.3247  discard=0.494
+20:31:06 | INFO | DONE  | N=10  h=1.0  L=2  (2075.0 s)
+20:31:14 | INFO |   [raw] E=-17.0216 ±0.0176  rel_err=0.1948  discard=0.000
+20:31:26 | INFO |   [zne] E=-7.2955 ±0.0316  rel_err=0.2529  discard=0.000
+20:31:39 | INFO |   [readout] E=-18.5728 ±0.0210  rel_err=0.1214  discard=0.000
+20:31:55 | INFO |   [ro+parity] E=-9.4443 ±0.0346  rel_err=0.0329  discard=0.389
+20:32:03 | INFO |   [parity] E=-17.9808 ±0.0249  rel_err=0.1494  discard=0.474
+20:32:30 | INFO |   Restart 3/3: E=-5.740234  converged=True  nfev=277
+20:32:59 | INFO |   [raw] E=-8.7104 ±0.0102  rel_err=0.2965  discard=0.000
+20:33:19 | INFO |   [zne] E=-17.0216 ±0.0402  rel_err=0.1948  discard=0.000
+20:33:21 | INFO |   [ro+zne] E=-8.5977 ±0.0398  rel_err=0.1196  discard=0.000
+20:33:23 | INFO |   [readout] E=-10.1640 ±0.0124  rel_err=0.1791  discard=0.000
+20:33:37 | INFO |   [ro+parity] E=-19.8568 ±0.0404  rel_err=0.0607  discard=0.443
+20:33:46 | INFO |   [parity] E=-8.9069 ±0.0186  rel_err=0.2806  discard=0.494
+20:34:46 | INFO |   [parity+zne] E=-8.2878 ±0.0442  rel_err=0.1513  discard=0.452
+20:34:57 | INFO |   [ro+zne] E=-18.5728 ±0.0480  rel_err=0.1214  discard=0.000
+20:35:24 | INFO |   [zne] E=-8.7104 ±0.0234  rel_err=0.2965  discard=0.000
+20:35:44 | INFO |   Restart 3/3: E=-14.326172  converged=True  nfev=283
+20:35:55 | INFO |   [ro+parity] E=-10.4073 ±0.0350  rel_err=0.1594  discard=0.485
+20:36:14 | INFO |   [raw] E=-14.9106 ±0.0169  rel_err=0.2946  discard=0.000
+20:36:22 | INFO |   [parity+zne] E=-17.9808 ±0.0569  rel_err=0.1494  discard=0.474
+20:36:24 | INFO |   [ro+parity+zne] E=-9.4443 ±0.0791  rel_err=0.0329  discard=0.389
+20:36:24 | INFO | DONE  | N=10  h=0.5  L=3  (2540.5 s)
+20:36:44 | INFO |   [readout] E=-16.8302 ±0.0197  rel_err=0.2038  discard=0.000
+20:37:11 | INFO |   [parity] E=-14.7099 ±0.0296  rel_err=0.3041  discard=0.500
+20:37:28 | INFO |   [ro+zne] E=-10.1640 ±0.0282  rel_err=0.1791  discard=0.000
+20:37:39 | INFO |   [ro+parity+zne] E=-19.8568 ±0.0923  rel_err=0.0607  discard=0.443
+20:37:39 | INFO | DONE  | N=10  h=2.0  L=2  (2124.3 s)
+20:38:38 | INFO |   [zne] E=-14.9106 ±0.0386  rel_err=0.2946  discard=0.000
+20:38:53 | INFO |   [parity+zne] E=-8.9069 ±0.0425  rel_err=0.2806  discard=0.494
+20:39:04 | INFO |   [ro+parity] E=-16.4008 ±0.0501  rel_err=0.2242  discard=0.500
+20:40:17 | INFO |   [ro+parity+zne] E=-10.4073 ±0.0799  rel_err=0.1594  discard=0.485
+20:40:17 | INFO | DONE  | N=10  h=1.0  L=3  (2527.4 s)
+20:40:28 | INFO |   [ro+zne] E=-16.8302 ±0.0451  rel_err=0.2038  discard=0.000
+20:41:49 | INFO |   [parity+zne] E=-14.7099 ±0.0676  rel_err=0.3041  discard=0.500
+20:43:10 | INFO |   [ro+parity+zne] E=-16.4008 ±0.1143  rel_err=0.2242  discard=0.500
+20:43:10 | INFO | DONE  | N=10  h=2.0  L=3  (2416.1 s)
+20:43:10 | INFO | Generating plots...
+20:43:16 | INFO | Saved: plot_relative_error_individual.pdf
+20:43:23 | INFO | Saved: plot_relative_error_all.pdf
+20:43:26 | INFO | Saved: plot_absolute_energy.pdf
+20:43:27 | INFO | Saved: plot_absolute_energy_zoom.pdf
+20:43:32 | INFO | Saved: plot_convergence.pdf
+20:43:35 | INFO | Saved: plot_cost_vs_error.pdf
+20:43:42 | INFO | Saved: plot_error_scaling.pdf
+20:43:43 | INFO | Saved: plot_parity_discard.pdf
+20:43:43 | INFO | Done.
