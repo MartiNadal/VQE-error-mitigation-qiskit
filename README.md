@@ -1,7 +1,7 @@
 # VQE Mitigation Benchmark: 1D TFIM Analysis
 **Dissertation Project | Quantum Computing & Error Mitigation**
 
-This repository contains a specialized framework for benchmarking Variational Quantum Eigensolver (VQE) performance on the 1D Transverse Field Ising Model (TFIM). The project evaluates various error mitigation strategies, including Zero-Noise Extrapolation (ZNE) and Readout Mitigation, to analyze their impact on energy accuracy and convergence.
+This repository contains a specialized framework for benchmarking Variational Quantum Eigensolver (VQE) performance on the 1D Transverse Field Ising Model (TFIM). The project evaluates error mitigation strategies, including Readout Mitigation, Parity Symmetry Verification, and Zero-Noise Extrapolation (ZNE), to analyze their impact on energy accuracy and convergence.
 
 ## 🔬 Scientific Overview
 The benchmark simulates the Hamiltonian for a 1D chain of $N$ spins:
