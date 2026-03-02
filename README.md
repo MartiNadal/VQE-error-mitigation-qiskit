@@ -10,7 +10,7 @@ $$H = -J \sum_{i=1}^{N-1} \sigma_i^z \sigma_{i+1}^z - h \sum_{i=1}^N \sigma_i^x$
 We specifically explore:
 * **Phase Transitions:** Benchmarking at $h < 1.0$ (Ordered) and $h = 1.0$ (Critical).
 * **Mitigation Pareto Frontier:** Analyzing the trade-off between computational overhead and error reduction.
-* **Error Scaling:** Quantifying how relative error $\epsilon$ scales with system size $N$.
+* **Error Scaling:** Quantifying how relative error $\epsilon$ scales with system size $N$ and Ansatz depth.
 
 ## 🛠️ Project Structure
 * `main.py`: The primary execution script for the VQE loop.
