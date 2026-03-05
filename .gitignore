@@ -1,0 +1,26 @@
+# Python Bytecode (Generated automatically, no need to save)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large Simulation Logs (Keep your GitHub clean)
+*.log
+vqe_benchmark.log
+
+# Virtual Environments (Everyone should build their own)
+venv/
+env/
+.env
+
+# PyCharm/IDE Settings (Specific to your computer)
+.idea/
+.vscode/
+
+# Project Results/Data (Usually too large for GitHub)
+# Uncomment the line below if you want to keep data local only
+# results/
+plots/run_*/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
