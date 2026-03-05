@@ -90,7 +90,8 @@ def apply_zne_folding(qc: QuantumCircuit, scale: int) -> QuantumCircuit:
     n_folds = (scale - 1) // 2
     # Integer division: (3-1)//2=1, (5-1)//2=2, (7-1)//2=3
 
-    folded = QuantumCircuit(qc.num_qubits)
+    folded = qc.copy()
+    folded.clear()
 
     # qc.data: list of CircuitInstruction named tuples.
     # Each has .operation (gate object), .qubits, .clbits.
@@ -119,7 +120,7 @@ def apply_zne_folding(qc: QuantumCircuit, scale: int) -> QuantumCircuit:
             )
             continue
 
-        # Append n_folds copies of (G_dagger, G)
+        # Append n_folds copies of (G†, G)
         for _ in range(n_folds):
             folded.append(inv_op, inst.qubits, inst.clbits)
             folded.append(inst)

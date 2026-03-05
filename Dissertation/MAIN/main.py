@@ -31,6 +31,7 @@ Result management:
 
 from __future__ import annotations
 import logging
+from logging.handlers import RotatingFileHandler
 import multiprocessing
 import os
 import numpy as np
@@ -40,13 +41,20 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%H:%M:%S",
     handlers=[
-        logging.FileHandler("vqe_benchmark.log", encoding="utf-8"), # Saves to a file
+        RotatingFileHandler("vqe_benchmark.log",
+                            maxBytes=5 * 1024 * 1024,
+                            backupCount=5,
+                            encoding="utf-8"), # Saves to a file
         logging.StreamHandler()   # Still prints to console
     ]
 )
+
+logging.getLogger("qiskit").setLevel(logging.WARNING)
+logging.getLogger("qiskit_aer").setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
-from config import CFG, INDIVIDUAL_CONFIGS, COMBINED_CONFIGS
+from config import CFG, INDIVIDUAL_CONFIGS
 from benchmark import run_benchmark, load_results
 from plotting import (
     plot_relative_error,

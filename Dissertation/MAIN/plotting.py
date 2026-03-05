@@ -101,6 +101,8 @@ def plot_relative_error(
                     color=sty["color"], alpha=0.15,
                 )
 
+            ax.set_ylim(1e-2, 1e0)
+
             ax.set_xticks(ns)
             ax.grid(True, which="both", alpha=0.3, linestyle=":")
             if h_idx == 0:

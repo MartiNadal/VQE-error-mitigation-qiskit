@@ -90,6 +90,10 @@ class BenchmarkConfig:
     # Aer's internal OpenMP thread count per process. Set to 1 when using
     # Python multiprocessing to avoid CPU core contention.
 
+    # The standard basis gates for most IBM Quantum systems (Falcon/Eagle), including Brisbane
+    _IBM_BASIS_GATES: list[str] = field(default_factory=lambda: ['cx', 'id', 'rz', 'sx', 'x'])
+
+
 
 # Global config instance — import this everywhere
 CFG = BenchmarkConfig()
