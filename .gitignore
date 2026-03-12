@@ -1,0 +1,27 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+vqe_benchmark.log
+
+# Virtual Environments
+venv/
+env/
+.env
+
+# IDE Settings
+.idea/
+.vscode/
+
+# Simulation outputs — do not commit
+results/
+plots/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.venv/
