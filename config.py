@@ -82,6 +82,8 @@ class BenchmarkConfig:
     # --- Infrastructure ---
     results_dir: str = "results"
     # Directory for incremental JSON result files.
+    plots_dir: str = "plots"
+    # Directory for incremental PDF plots files.
 
     seed: int = 42
     # Global random seed for reproducibility (numpy + Aer simulator).

@@ -20,7 +20,7 @@ all_results = load_results()
 #plot_error_scaling(all_results, CFG)
 #plot_parity_discard(all_results, CFG)
 plot_relative_error(all_results, CFG,
-                    configs_to_show= ["raw", "parity"],
+                    configs_to_show= ["raw", "zne"],
                     fname="plot_relative_error_individual.pdf"
 )
 

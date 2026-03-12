@@ -20,6 +20,7 @@ Import example:
 
 from __future__ import annotations
 import logging
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -33,6 +34,8 @@ from config import (CFG,
     INDIVIDUAL_CONFIGS,
     COMBINED_CONFIGS,
 )
+
+os.makedirs(CFG.plots_dir, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +123,7 @@ def plot_relative_error(
     fig.legend(handles=handles, loc="lower center", ncol=min(4, len(configs_to_show)),
                bbox_to_anchor=(0.5, -0.02), fontsize=9, framealpha=0.9)
     plt.tight_layout(rect=[0, 0.06, 1, 0.96])
-    plt.savefig(fname, bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: %s", fname)
 
@@ -190,7 +193,7 @@ def plot_absolute_energy(
     fig.legend(handles, labels, loc="lower center", ncol=5,
                bbox_to_anchor=(0.5, -0.02), fontsize=9, framealpha=0.9)
     plt.tight_layout(rect=[0, 0.06, 1, 0.96])
-    plt.savefig("plot_absolute_energy.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_absolute_energy.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_absolute_energy.pdf")
 
@@ -228,7 +231,7 @@ def plot_absolute_energy(
     ax2.grid(True, axis="y", alpha=0.3)
     ax2.legend(fontsize=8, loc="upper right")
     plt.tight_layout()
-    plt.savefig("plot_absolute_energy_zoom.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_absolute_energy_zoom.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_absolute_energy_zoom.pdf")
 
@@ -311,7 +314,7 @@ def plot_convergence(
             ax.legend(fontsize=7, ncol=2, loc="upper right")
 
     plt.tight_layout()
-    plt.savefig("plot_convergence.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_convergence.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_convergence.pdf")
 
@@ -496,7 +499,7 @@ def plot_cost_vs_error(
     fig.legend(handles=handles, loc="lower center", ncol=4,
                bbox_to_anchor=(0.5, -0.04), fontsize=8.5, framealpha=0.9)
     plt.tight_layout(rect=[0, 0.08, 1, 0.95])
-    plt.savefig("plot_cost_vs_error.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_cost_vs_error.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_cost_vs_error.pdf")
 
@@ -596,7 +599,7 @@ def plot_error_scaling(
 
     print("="*70 + "\n")
     plt.tight_layout(rect=[0, 0.02, 1, 0.97])
-    plt.savefig("plot_error_scaling.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_error_scaling.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_error_scaling.pdf")
 
@@ -659,6 +662,6 @@ def plot_parity_discard(
 
     fig.colorbar(im, ax=axes.tolist(), label="Discard Fraction", shrink=0.8)
     plt.tight_layout()
-    plt.savefig("plot_parity_discard.pdf", bbox_inches="tight", dpi=150)
+    plt.savefig(os.path.join(CFG.plots_dir, "plot_parity_discard.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_parity_discard.pdf")
