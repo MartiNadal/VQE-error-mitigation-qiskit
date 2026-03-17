@@ -19,6 +19,7 @@ env/
 # Simulation outputs — do not commit
 results/
 plots/
+results_zne_study/
 
 # OS files
 .DS_Store
