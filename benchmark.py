@@ -166,6 +166,9 @@ def run_single_combination(args: tuple) -> dict:
             "parity_discard":   mean_disc,   # actual measured discard, 0.0 if no parity
             "cost":             cost,
         }
+        if use_zne:
+            config_results[config_name]["zne_scale_means"] = [float(x) for x in scale_means]
+            config_results[config_name]["zne_scale_sems"] = [float(x) for x in scale_sems]
         logger.info("  [%s] E=%.4f ±%.4f  rel_err=%.4f  discard=%.3f",
                     config_name, mean_e, sem_e, rel_err, mean_disc)
 

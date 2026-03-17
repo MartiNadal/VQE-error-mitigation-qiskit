@@ -63,6 +63,8 @@ from plotting import (
     plot_cost_vs_error,
     plot_error_scaling,
     plot_parity_discard,
+    plot_parity_discard_comparison,
+    plot_parity_discard_delta,
 )
 
 
@@ -115,6 +117,8 @@ def main() -> None:
     plot_cost_vs_error(all_results, CFG)
     plot_error_scaling(all_results, CFG)
     plot_parity_discard(all_results, CFG)
+    plot_parity_discard_comparison(all_results, CFG)
+    plot_parity_discard_delta(all_results, CFG)
 
     logger.info("Done.")
 

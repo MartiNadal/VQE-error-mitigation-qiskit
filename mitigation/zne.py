@@ -90,8 +90,9 @@ def apply_zne_folding(qc: QuantumCircuit, scale: int) -> QuantumCircuit:
     n_folds = (scale - 1) // 2
     # Integer division: (3-1)//2=1, (5-1)//2=2, (7-1)//2=3
 
-    folded = qc.copy()
-    folded.clear()
+    # Use copy_empty_like() to ensure the new circuit uses the
+    # EXACT same Qubit and Clbit objects as the original.
+    folded = qc.copy_empty_like()
 
     # qc.data: list of CircuitInstruction named tuples.
     # Each has .operation (gate object), .qubits, .clbits.

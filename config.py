@@ -25,7 +25,7 @@ class BenchmarkConfig:
     """
 
     # --- Physical system ---
-    system_sizes: tuple[int, ...] = (2, 4, 6, 8, 10)
+    system_sizes: tuple[int, ...] = (2, 4, 6, 8, 10, 12)
     # N values to sweep. Must be even: parity post-selection requires the
     # TFIM ground state to lie in the even-parity sector, which holds for
     # even N with open boundary conditions.
@@ -67,7 +67,7 @@ class BenchmarkConfig:
     # Random-start COBYLA runs per (N, h, L). Best result retained.
     # Guards against local minima and barren plateaus.
 
-    maxiter: int = 300
+    maxiter: int = 600
     # Maximum COBYLA function evaluations per restart.
 
     rhobeg: float = float(np.pi / 4)

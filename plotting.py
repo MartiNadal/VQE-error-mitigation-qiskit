@@ -25,6 +25,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+import matplotlib.colors as mcolors
+from matplotlib.ticker import FormatStrFormatter
 
 from config import (CFG,
     MITIGATION_CONFIGS,
@@ -605,7 +607,7 @@ def plot_error_scaling(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 6. Parity discard fraction heatmap  (new — shows measured waste per regime)
+# 6. Parity discard fraction heatmap  (shows measured waste per regime)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def plot_parity_discard(
@@ -665,3 +667,240 @@ def plot_parity_discard(
     plt.savefig(os.path.join(CFG.plots_dir, "plot_parity_discard.pdf"), bbox_inches="tight", dpi=150)
     plt.show()
     logger.info("Saved: plot_parity_discard.pdf")
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. Parity discard comparison (parity vs ro+parity)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def plot_parity_discard_comparison(
+    all_results: list[dict],
+    cfg: BenchmarkConfig = CFG,
+    fname: str = "plot_parity_discard_comparison.pdf",
+) -> None:
+    """
+    Heatmap comparison of parity discard fraction for 'parity' vs 'ro+parity'.
+
+    Layout: three columns (one per L), two rows (parity | ro+parity).
+    Each cell shows the mean discard fraction across n_reps, annotated
+    with the numerical value.
+
+    Colour scale matches the existing plot_parity_discard function:
+        white/yellow = low discard (0.0), dark red = high discard (0.5).
+    Colourmap: YlOrRd, vmin=0.0, vmax=0.5.
+
+    Physical interpretation: readout correction reduces the effective
+    bit-flip probability per qubit from (p_readout + p_gate) to approximately
+    p_gate, lowering the probability that an odd number of errors has occurred.
+    The discard reduction is most pronounced at large N, where the accumulated
+    per-qubit errors compound multiplicatively via (1-2p)^N.
+
+    Generatable from existing JSON data — no rerun required.
+    The 'ro+parity' config already records its measured parity_discard.
+
+    Parameters
+    ----------
+    all_results : list[dict]
+        Output of load_results() — the standard benchmark results.
+    cfg : BenchmarkConfig
+        Configuration (uses cfg.h_fields, cfg.layers, cfg.system_sizes).
+    fname : str
+        Output filename. Saved to CFG.plots_dir.
+    """
+    n_rows = 2
+    n_cols = len(cfg.layers)
+    config_names = ["parity", "ro+parity"]
+    row_labels   = ["Parity only", "Readout + Parity"]
+
+    fig, axes = plt.subplots(
+        n_rows, n_cols,
+        figsize=(4.5 * n_cols, 3.5 * n_rows),
+    )
+    fig.suptitle(
+        "Parity Discard Fraction: Effect of Readout Correction\n"
+        "(rows = mitigation config, columns = ansatz depth L)",
+        fontsize=13, fontweight="bold",
+    )
+
+    # Colour scale matches plot_parity_discard exactly
+    vmin, vmax = 0.0, 0.5
+    cmap = "YlOrRd"
+
+    Ns = sorted(cfg.system_sizes)
+    hs = list(cfg.h_fields)
+
+    im = None  # will be set inside loop; used for shared colourbar
+
+    for row_idx, config_name in enumerate(config_names):
+        for col_idx, L_val in enumerate(cfg.layers):
+            ax = axes[row_idx, col_idx]
+
+            # Build (N, h) data matrix — same order as plot_parity_discard
+            data = np.full((len(Ns), len(hs)), np.nan)
+            for n_idx, N in enumerate(Ns):
+                for h_idx, h in enumerate(hs):
+                    match = [
+                        r for r in all_results
+                        if r["N"] == N and r["h"] == h and r["L"] == L_val
+                    ]
+                    if match and config_name in match[0]:
+                        data[n_idx, h_idx] = match[0][config_name]["parity_discard"]
+
+            # origin="lower" so that small N is at the bottom — matches
+            # the convention in the existing plot_parity_discard function
+            im = ax.imshow(
+                data,
+                vmin=vmin, vmax=vmax,
+                cmap=cmap,
+                aspect="auto",
+                origin="lower",
+            )
+
+            # Annotate each cell with the numerical value.
+            # White text when background is dark (high discard); black otherwise.
+            for n_idx in range(len(Ns)):
+                for h_idx in range(len(hs)):
+                    val = data[n_idx, h_idx]
+                    if not np.isnan(val):
+                        text_color = "white" if val > 0.35 else "black"
+                        ax.text(
+                            h_idx, n_idx,
+                            f"{val:.2f}",
+                            ha="center", va="center",
+                            fontsize=9, color=text_color, fontweight="bold",
+                        )
+
+            # X-axis: h values
+            ax.set_xticks(range(len(hs)))
+            ax.set_xticklabels([f"h={h}" for h in hs], fontsize=9)
+
+            # Y-axis: system sizes — force labels on every panel to avoid
+            # matplotlib suppressing them on interior subplots
+            ax.set_yticks(range(len(Ns)))
+            ax.set_yticklabels([f"N={N}" for N in Ns], fontsize=9)
+            ax.tick_params(labelleft=True)  # never suppress y-labels
+
+            # Column header (depth L) — top row only
+            if row_idx == 0:
+                ax.set_title(f"Depth  L = {L_val}", fontsize=11)
+
+            # Row label (config name) — left column only
+            if col_idx == 0:
+                ax.set_ylabel(row_labels[row_idx], fontsize=10, fontweight="bold")
+
+    # Shared colourbar on the right, matching plot_parity_discard style
+    fig.subplots_adjust(right=0.88)
+    cbar_ax = fig.add_axes([0.91, 0.15, 0.02, 0.7])
+    cbar = fig.colorbar(im, cax=cbar_ax)
+    cbar.set_label("Discard Fraction", fontsize=10)
+    cbar.set_ticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
+
+    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
+    plt.show()
+    logger.info("Saved: %s", fname)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 8. Parity discard difference map (ro+parity minus parity)
+# This companion figure shows WHERE the readout correction helps most.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def plot_parity_discard_delta(
+        all_results: list[dict],
+        cfg: BenchmarkConfig = CFG,
+        fname: str = "plot_parity_discard_delta.pdf",
+) -> None:
+    """
+    Heatmap of the REDUCTION in parity discard: (parity - ro+parity).
+
+    Positive values = readout correction reduces discards (beneficial).
+    Negative values = readout correction increases discards (unexpected,
+        could indicate pathological regime).
+
+    This plot quantifies how much readout correction "rescues" the parity
+    discard fraction by reducing the effective per-qubit error probability.
+    The theoretical prediction is that the reduction grows with N, following
+    the formula derived in Section 2.4 of the report.
+
+    Parameters
+    ----------
+    all_results : list[dict]
+        Output of load_results().
+    cfg : BenchmarkConfig
+    fname : str
+        Output filename.
+    """
+    n_cols = len(cfg.layers)
+    Ns = sorted(cfg.system_sizes)
+    hs = list(cfg.h_fields)
+
+    fig, axes = plt.subplots(
+        1, n_cols,
+        figsize=(4.5 * n_cols, 3.5),
+    )
+    if n_cols == 1:
+        axes = [axes]
+
+    fig.suptitle(
+        r"Readout Correction Benefit: $f_\mathrm{discard}^\mathrm{parity}$"
+        r" $- f_\mathrm{discard}^\mathrm{ro+parity}$"
+        "\n(positive = readout correction reduces discards)",
+        fontsize=12, fontweight="bold",
+    )
+
+    all_deltas = []
+    delta_arrays = []
+    for col_idx, L_val in enumerate(cfg.layers):
+        data = np.full((len(Ns), len(hs)), np.nan)
+        for n_idx, N in enumerate(Ns):
+            for h_idx, h in enumerate(hs):
+                match = [
+                    r for r in all_results
+                    if r["N"] == N and r["h"] == h and r["L"] == L_val
+                ]
+                if match:
+                    r = match[0]
+                    parity_discard = r.get("parity", {}).get("parity_discard", np.nan)
+                    ro_parity_discard = r.get("ro+parity", {}).get("parity_discard", np.nan)
+                    data[n_idx, h_idx] = parity_discard - ro_parity_discard
+        delta_arrays.append(data)
+        all_deltas.extend(data[~np.isnan(data)].tolist())
+
+    # Symmetric colormap centred at 0
+    abs_max = max(abs(min(all_deltas)), abs(max(all_deltas))) if all_deltas else 0.1
+    abs_max = max(abs_max, 0.02)  # ensure non-zero scale
+
+    for col_idx, (L_val, data) in enumerate(zip(cfg.layers, delta_arrays)):
+        ax = axes[col_idx]
+        im = ax.imshow(
+            data,
+            vmin=-abs_max, vmax=abs_max,
+            cmap="RdBu",  # blue=positive (readout helps), red=negative
+            aspect="auto",
+        )
+        for n_idx in range(len(Ns)):
+            for h_idx in range(len(hs)):
+                val = data[n_idx, h_idx]
+                if not np.isnan(val):
+                    ax.text(
+                        h_idx, n_idx,
+                        f"{val:+.2f}",
+                        ha="center", va="center",
+                        fontsize=9, fontweight="bold",
+                        color="white" if abs(val) > 0.6 * abs_max else "black",
+                    )
+        ax.set_xticks(range(len(hs)))
+        ax.set_xticklabels([f"h={h}" for h in hs], fontsize=9)
+        ax.set_yticks(range(len(Ns)))
+        ax.set_yticklabels([f"N={N}" for N in Ns], fontsize=9)
+        ax.set_title(f"Depth  L = {L_val}", fontsize=11)
+
+    fig.subplots_adjust(right=0.88)
+    cbar_ax = fig.add_axes([0.91, 0.15, 0.02, 0.7])
+    cbar = fig.colorbar(im, cax=cbar_ax)
+    cbar.set_label(r"$\Delta f_\mathrm{discard}$  (parity $-$ ro+parity)", fontsize=9)
+
+    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
+    plt.show()
+    logger.info("Saved: %s", fname)

@@ -214,43 +214,48 @@ def get_energy_single_shot(
         Mean measured parity discard fraction across Z and X bases.
         Exactly 0.0 if ``use_parity=False``.
     """
-    # ── Step 1: bind parameters BEFORE any manipulation ──────────────────────
-    # Converts symbolic RY(theta_i) to concrete RY(1.234).
-    # assign_parameters must come before both transpile and fold.
-    qc_bound = ansatz.assign_parameters(params)
-
-    # ── Step 2: transpile to native basis gates ───────────────────────────────
-    # Decomposes ry → rz + sx + rz and cz → cx + rz (approximately).
-    # After this step, every gate has a defined error in the noise model.
-    # optimization_level=1: merge adjacent single-qubit gates for efficiency.
-    # We do NOT re-transpile after folding (Step 3) to avoid G†G cancellation.
-    qc_native = _transpile_to_basis(
-        qc_bound,
-        basis_gates=CFG._IBM_BASIS_GATES,
-        optimization_level=1,
-    )
-
-    # ── Step 3: ZNE gate folding on the NATIVE circuit ───────────────────────
-    # Fold after transpile: the folded G†G pairs are in native gates,
-    # so each pair carries real noise from the model.
-    # The circuit is already in basis gates — no further transpilation needed,
-    # so Aer will not cancel the folded pairs.
-    if zne_scale > 1:
-        qc_native = apply_zne_folding(qc_native, zne_scale)
-
-    # ── Step 4: add measurement bases and run ────────────────────────────────
-    qc_z = qc_native.copy()
+    # ── Step 1: Create measurement basis circuits (PARAMETRIC) ───────────────
+    # Add the basis rotations BEFORE any transpilation.
+    # This ensures the H-gate is decomposed into native gates (sx, rz)
+    # and included in the ZNE folding.
+    qc_z = ansatz.copy()
     qc_z.measure_all()
 
-    qc_x = qc_native.copy()
+    qc_x = ansatz.copy()
     qc_x.h(range(N))
     qc_x.measure_all()
 
-    # optimization_level=0: the circuits are already in native basis gates.
-    # Passing 0 prevents Aer from running any further transpilation pass,
-    # which is the safest option now that we have handled transpilation above.
-    job = sim.run(
+    # ── Step 2: Transpile to native basis gates ──────────────────────────────
+    # Decompose ry → rz + sx + rz and cz → cx + rz (approximately).
+    # After this step, every gate has a defined error in the noise model.
+    # Pass BOTH circuits as a list. This guarantees they share the same
+    # physical qubit layout (initial_layout) and routing.
+    # optimization_level=1 is safe here because there is no folding yet.
+    transpiled_circs = _transpile_to_basis(
         [qc_z, qc_x],
+        basis_gates=CFG._IBM_BASIS_GATES,
+        optimization_level=1,
+    )
+    qc_z_native = transpiled_circs[0]
+    qc_x_native = transpiled_circs[1]
+
+    # ── Step 3: ZNE gate folding on the NATIVE circuit ───────────────────────
+    # Fold the transpiled, parametric circuits.
+    # The folding happens on native gates like CX, SX, and RZ(theta).
+    if zne_scale > 1:
+        qc_z_native = apply_zne_folding(qc_z_native, zne_scale)
+        qc_x_native = apply_zne_folding(qc_x_native, zne_scale)
+
+    # ── Step 4: Bind parameters AFTER folding ────────────────────────────────
+    # Convert symbolic RY(theta_i) to concrete RY(1.234).
+    qc_z_bound = qc_z_native.assign_parameters(params)
+    qc_x_bound = qc_x_native.assign_parameters(params)
+
+    # ── Step 5: Run ──────────────────────────────────────────────────────────
+    # optimization_level=0 is MANDATORY to ensure Aer does not
+    # perform any "peephole" optimizations that would cancel G-G_inv pairs.
+    job = sim.run(
+        [qc_z_bound, qc_x_bound],
         shots=shots,
         seed_simulator=seed,
         optimization_level=0,
@@ -259,7 +264,7 @@ def get_energy_single_shot(
     counts_z = result.get_counts(0)
     counts_x = result.get_counts(1)
 
-    # ── Step 5: post-processing ───────────────────────────────────────────────
+    # ── Step 6: post-processing ───────────────────────────────────────────────
     probs_z: dict[str, float] = {b: c / shots for b, c in counts_z.items()}
     probs_x: dict[str, float] = {b: c / shots for b, c in counts_x.items()}
 
