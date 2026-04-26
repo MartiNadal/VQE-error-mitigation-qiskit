@@ -1,906 +1,1022 @@
 """
-plotting.py
-===========
-All visualisation functions for the VQE mitigation benchmark.
+plot_supplementary.py
+=====================
+Generates ALL dissertation figures from pre-saved JSON results.
 
-Four plots:
-    1. plot_relative_error   -- relative error vs N, all configs, all (h, L)
-    2. plot_absolute_energy  -- absolute energy vs N with shaded SEM bands + zoomed inset panel
-    3. plot_convergence      -- VQE optimisation curves for all (h, L, N), normalised as relative error
-    4. plot_cost_vs_error    -- Pareto frontier plot
+Run this file from the project root directory:
+    python plot_supplementary.py
 
-All plots saved as PDF (vector graphics: infinitely scalable, no pixelation).
-PDFs are suitable for inclusion in a LaTeX report.
+Sections
+--------
+    A.  FakeBrisbane main benchmark  (loads from FakeBrisbane_results_updated_skip_rz/)
+    B.  FakeFez main benchmark       (loads from FakeFez_results_updated_skip_rz/)
+    C.  ZNE noise composition study  (loads from results_zne_study/)
+    D.  Real hardware (ibm_fez)      (loads from results_hardware/)
 
-Import example:
-    from plotting import plot_relative_error, plot_absolute_energy
-    from plotting import plot_convergence, plot_cost_vs_error
-    from plotting import plot_error_scaling, plot_parity_discard
+For each benchmark device (A, B) the following plots are generated:
+    1.  Relative error — individual mitigation methods
+        (raw, RC, PPS, ZNE  — solid lines only)
+    2.  Relative error — combined mitigation strategies
+        (raw as reference + all four combinations — dashed lines)
+    3.  VQE convergence history
+    4.  Pareto frontier (cost vs error)
+    5.  Parity discard heatmap
+    6.  Parity discard delta heatmap  (parity − ro+parity)
+
+One PDF is produced per (h, L) panel for plots 1–3,
+one per h for plot 4, and one per L for plots 5–6.
+
+File naming convention
+----------------------
+    {plot_type}_{device}_{h_or_L_descriptor}.pdf
+
+    e.g.  rel_err_individual_brisbane_h1p0_L2.pdf
+          convergence_fez_L2_h0p5.pdf
+          pareto_brisbane_h1p0.pdf
+          parity_discard_fez_L1.pdf
+
+Design
+------
+    Typography  : Times New Roman / STIX (matches \\usepackage{newtxtext,newtxmath})
+    Figure width: 6.30 in  (A4 − 2 × 2.5 cm margins)
+    Height      : width / golden ratio ≈ 3.90 in  (adjusted per plot type)
+    Colour      : ColorBrewer + Tableau palette, greyscale-safe via
+                  simultaneous use of colour + marker + linestyle
+    Solid lines : individual methods
+    Dashed lines: combined methods
+    No figure titles — captions written in LaTeX
+
+    Panel plots (3×3 or 1×3 grids) are generated at reduced figsize so that
+    text and markers remain legible when LaTeX displays each panel at
+    ~0.31 textwidth (~2 inches).
 """
 
 from __future__ import annotations
+import glob
+import json
 import logging
 import os
+from typing import Optional
+
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-import matplotlib.colors as mcolors
-from matplotlib.ticker import FormatStrFormatter
-
-from config import (CFG,
-    MITIGATION_CONFIGS,
-    STYLE,
-    PHASE_LABELS,
-    BenchmarkConfig,
-    INDIVIDUAL_CONFIGS,
-    COMBINED_CONFIGS,
-)
-
-os.makedirs(CFG.plots_dir, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 
+# ── Project imports ────────────────────────────────────────────────────────────
+from config import CFG, MITIGATION_CONFIGS
+
+os.makedirs(CFG.plots_dir, exist_ok=True)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 1. Relative error grid  (unchanged — this plot works)
-# ─────────────────────────────────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════════
+# §0  Global style
+# ═════════════════════════════════════════════════════════════════════════════
 
-def plot_relative_error(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
-    configs_to_show: list[str] | None = None,
-    fname: str = "plot_relative_error.pdf",
-) -> None:
-    """
-    Grid: relative error |E_mit - E_exact|/|E_exact| vs N.
-    Rows = h (phase), Columns = L (depth). Log y-axis. Shaded ±1 SEM bands.
+_TW = 6.30        # text width in inches (A4, 2.5 cm margins)
+_GR = 1.618       # golden ratio
+_FH = _TW / _GR   # default full-width figure height
 
-    Parameters
-    ----------
-    configs_to_show : list[str] or None
-        Which configs to plot. None = all 8.
-        Pass INDIVIDUAL_CONFIGS to show only the four individual methods.
-    fname : str
-        Output filename.
-    """
-    if configs_to_show is None:
-        configs_to_show = list(STYLE.keys())
+# ── Panel sizes ───────────────────────────────────────────────────────────────
+# Panels displayed in a 3×3 grid at 0.31\textwidth ≈ 2.0 in each.
+# Generate at ~3.2 in wide so LaTeX shrinks by ~0.63×, keeping text legible.
+_PANEL_W = 3.2     # panel figure width (inches)
+_PANEL_H = 2.4     # panel figure height (inches)
 
-    fig, axes = plt.subplots(
-        len(cfg.h_fields), len(cfg.layers),
-        figsize=(6 * len(cfg.layers), 4 * len(cfg.h_fields)),
-    )
-    fig.suptitle(
-        "Relative Error vs System Size  |  1D TFIM VQE Mitigation Benchmark",
-        fontsize=15, fontweight="bold",
-    )
+# Panels displayed in a 1×3 grid at 0.32\textwidth ≈ 2.0 in each.
+# Same target size as 3×3 panels.
+_TRIPLET_W = 3.4
+_TRIPLET_H = 2.6
 
-    for h_idx, h_val in enumerate(cfg.h_fields):
-        for l_idx, l_val in enumerate(cfg.layers):
-            ax = axes[h_idx, l_idx]
-            subset = sorted(
-                [r for r in all_results if r["h"] == h_val and r["L"] == l_val],
-                key=lambda r: r["N"],
-            )
-            ns = [r["N"] for r in subset]
+matplotlib.rcParams.update({
+    # Typography
+    "font.family":          "serif",
+    "font.serif":           ["Times New Roman", "Times",
+                             "Nimbus Roman No9 L", "DejaVu Serif"],
+    "font.size":            9,
+    "axes.labelsize":       9,
+    "axes.titlesize":       9,
+    "xtick.labelsize":      8,
+    "ytick.labelsize":      8,
+    "legend.fontsize":      7.5,
+    "mathtext.fontset":     "stix",
+    "mathtext.default":     "regular",
+    # Lines
+    "lines.linewidth":      1.2,
+    "lines.markersize":     4.0,
+    "patch.linewidth":      0.6,
+    # Axes
+    "axes.linewidth":       0.7,
+    "axes.spines.top":      False,
+    "axes.spines.right":    False,
+    "axes.grid":            True,
+    "grid.alpha":           0.25,
+    "grid.linewidth":       0.5,
+    "grid.linestyle":       ":",
+    "axes.axisbelow":       True,
+    # Ticks
+    "xtick.major.width":    0.7,
+    "ytick.major.width":    0.7,
+    "xtick.major.size":     3.5,
+    "ytick.major.size":     3.5,
+    "xtick.minor.size":     2.0,
+    "ytick.minor.size":     2.0,
+    "xtick.direction":      "in",
+    "ytick.direction":      "in",
+    # Legend
+    "legend.frameon":       True,
+    "legend.framealpha":    0.90,
+    "legend.edgecolor":     "0.75",
+    "legend.borderpad":     0.4,
+    "legend.handlelength":  2.4,
+    "legend.handleheight":  0.9,
+    "legend.labelspacing":  0.30,
+    # Output
+    "figure.dpi":           150,
+    "savefig.dpi":          300,
+    "savefig.bbox":         "tight",
+    "savefig.pad_inches":   0.02,
+    "pdf.fonttype":         42,
+    "ps.fonttype":          42,
+})
 
-            for config_name in configs_to_show:
-                sty       = STYLE[config_name]
-                rel_errs  = [r[config_name]["rel_err"] for r in subset]
-                sems      = [r[config_name]["sem"] for r in subset]
-                exact_abs = [abs(r["exact"]) for r in subset]
-                rel_sems  = [s / e for s, e in zip(sems, exact_abs)]
+# ── Per-configuration visual style ────────────────────────────────────────────
+_STYLE: dict[str, dict] = {
+    "raw":           {"color": "#d62728", "marker": "o",  "ls": "-",  "lw": 1.2, "ms": 4.0},
+    "readout":       {"color": "#1f77b4", "marker": "s",  "ls": "-",  "lw": 1.2, "ms": 4.0},
+    "parity":        {"color": "#2ca02c", "marker": "^",  "ls": "-",  "lw": 1.2, "ms": 4.0},
+    "zne":           {"color": "#ff7f0e", "marker": "D",  "ls": "-",  "lw": 1.2, "ms": 4.0},
+    "ro+parity":     {"color": "#9467bd", "marker": "v",  "ls": "--", "lw": 1.2, "ms": 4.0},
+    "ro+zne":        {"color": "#8c564b", "marker": "P",  "ls": "--", "lw": 1.2, "ms": 4.0},
+    "parity+zne":    {"color": "#e377c2", "marker": "X",  "ls": "--", "lw": 1.2, "ms": 4.0},
+    "ro+parity+zne": {"color": "#222222", "marker": "*",  "ls": "--", "lw": 1.8, "ms": 5.5},
+}
 
-                ax.semilogy(
-                    ns, rel_errs,
-                    color=sty["color"], marker=sty["marker"],
-                    linestyle=sty["ls"], linewidth=sty["lw"],
-                    label=config_name,
-                )
-                ax.fill_between(
-                    ns,
-                    [max(1e-6, r - s) for r, s in zip(rel_errs, rel_sems)],
-                    [r + s for r, s in zip(rel_errs, rel_sems)],
-                    color=sty["color"], alpha=0.15,
-                )
+# ── Panel-specific style overrides ────────────────────────────────────────────
+# When generating panels for 3×3 or 1×3 grids, use thicker lines and larger
+# markers/fonts so they survive LaTeX shrinking to ~0.31\textwidth.
+_PANEL_STYLE: dict[str, dict] = {
+    "raw":           {"color": "#d62728", "marker": "o",  "ls": "-",  "lw": 1.6, "ms": 5.0},
+    "readout":       {"color": "#1f77b4", "marker": "s",  "ls": "-",  "lw": 1.6, "ms": 5.0},
+    "parity":        {"color": "#2ca02c", "marker": "^",  "ls": "-",  "lw": 1.6, "ms": 5.0},
+    "zne":           {"color": "#ff7f0e", "marker": "D",  "ls": "-",  "lw": 1.6, "ms": 5.0},
+    "ro+parity":     {"color": "#9467bd", "marker": "v",  "ls": "--", "lw": 1.6, "ms": 5.0},
+    "ro+zne":        {"color": "#8c564b", "marker": "P",  "ls": "--", "lw": 1.6, "ms": 5.0},
+    "parity+zne":    {"color": "#e377c2", "marker": "X",  "ls": "--", "lw": 1.6, "ms": 5.0},
+    "ro+parity+zne": {"color": "#222222", "marker": "*",  "ls": "--", "lw": 2.0, "ms": 6.5},
+}
 
-            ax.set_ylim(1e-2, 1e0)
+_LABELS: dict[str, str] = {
+    "raw":           "Raw",
+    "readout":       "R",
+    "parity":        "P",
+    "zne":           "Z",
+    "ro+parity":     "R + P",
+    "ro+zne":        "R + Z",
+    "parity+zne":    "P + Z",
+    "ro+parity+zne": "R + P + Z",
+}
 
-            ax.set_xticks(ns)
-            ax.grid(True, which="both", alpha=0.3, linestyle=":")
-            if h_idx == 0:
-                ax.set_title(f"Depth  L = {l_val}", fontsize=12)
-            if l_idx == 0:
-                ax.set_ylabel(f"{PHASE_LABELS[h_val]}\nRelative Error", fontsize=10)
-            if h_idx == len(cfg.h_fields) - 1:
-                ax.set_xlabel("System Size  N  (qubits)", fontsize=10)
+# Groups used for the split relative-error plots
+_INDIVIDUAL = ["raw", "readout", "parity", "zne"]
+_COMBINED   = ["raw", "ro+parity", "ro+zne", "parity+zne", "ro+parity+zne"]
 
-    handles = [
-        plt.Line2D([0], [0], color=STYLE[c]["color"], marker=STYLE[c]["marker"],
-                   linestyle=STYLE[c]["ls"], linewidth=1.5, label=c)
-        for c in configs_to_show
+# Hardware palette
+_HW_COLOR  = "#d62728"
+_SIM_COLOR = "#1f77b4"
+
+
+def _save(fig: plt.Figure, path: str) -> None:
+    fig.savefig(path)
+    plt.close(fig)
+    logger.info("Saved: %s", path)
+
+
+def _legend_handles(configs: list[str], panel: bool = False) -> list[plt.Line2D]:
+    style_dict = _PANEL_STYLE if panel else _STYLE
+    return [
+        plt.Line2D(
+            [0], [0],
+            color=style_dict[c]["color"],
+            marker=style_dict[c]["marker"],
+            linestyle=style_dict[c]["ls"],
+            linewidth=style_dict[c]["lw"],
+            markersize=style_dict[c]["ms"],
+            label=_LABELS[c],
+        )
+        for c in configs
     ]
-    fig.legend(handles=handles, loc="lower center", ncol=min(4, len(configs_to_show)),
-               bbox_to_anchor=(0.5, -0.02), fontsize=9, framealpha=0.9)
-    plt.tight_layout(rect=[0, 0.06, 1, 0.96])
-    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: %s", fname)
 
+
+def _hstr(h: float) -> str:
+    """Safe filename fragment for h value: 1.0 → 'h1p0'."""
+    return f"h{h:.1f}".replace(".", "p")
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# §1  Data loading
+# ═════════════════════════════════════════════════════════════════════════════
+
+def load_benchmark_results(folder: str) -> list[dict]:
+    results = []
+    for path in glob.glob(os.path.join(folder, "N*.json")):
+        try:
+            with open(path) as f:
+                results.append(json.load(f))
+        except Exception as exc:
+            logger.warning("Could not load %s: %s", path, exc)
+    if not results:
+        logger.warning("No results found in %s", folder)
+    else:
+        logger.info("Loaded %d result files from %s", len(results), folder)
+    return results
+
+
+def _infer_axes(results: list[dict]) -> tuple[list, list, list]:
+    Ns = sorted(set(r["N"] for r in results))
+    hs = sorted(set(r["h"] for r in results))
+    Ls = sorted(set(r["L"] for r in results))
+    return Ns, hs, Ls
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# §2  Main benchmark plots  (shared by Brisbane and Fez)
+# ═════════════════════════════════════════════════════════════════════════════
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2. Absolute energy with zoomed inset
+# 2.1  Relative error — one panel per (h, L)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def plot_absolute_energy(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
-    zoom_N: int = 6,
-    zoom_h: float = 1.0,
-    zoom_L: int = 2,
+def _plot_rel_err_panel(
+    results:  list[dict],
+    h_val:    float,
+    l_val:    int,
+    configs:  list[str],
+    Ns:       list[int],
+    path:     str,
 ) -> None:
-    """
-    Grid: absolute <H> vs N with shaded ±1 SEM bands.
-
-    The SEM bands are genuinely small relative to the energy scale, so
-    this also generates a separate zoomed figure for one representative
-    (N, h, L) data point where the bands become visible.
-
-    Parameters
-    ----------
-    zoom_N, zoom_h, zoom_L : int, float, int
-        The (N, h, L) combination to zoom into for the inset figure.
-        Default: N=6, h=1.0 (critical), L=2.
-    """
-    fig, axes = plt.subplots(
-        len(cfg.h_fields), len(cfg.layers),
-        figsize=(6 * len(cfg.layers), 4 * len(cfg.h_fields)),
+    """Render one relative-error panel at panel size and save to path."""
+    subset = sorted(
+        [r for r in results if r["h"] == h_val and r["L"] == l_val],
+        key=lambda r: r["N"],
     )
-    fig.suptitle(
-        "Absolute Ground-State Energy vs System Size  |  1D TFIM VQE",
-        fontsize=15, fontweight="bold",
-    )
-
-    for h_idx, h_val in enumerate(cfg.h_fields):
-        for l_idx, l_val in enumerate(cfg.layers):
-            ax = axes[h_idx, l_idx]
-            subset = sorted(
-                [r for r in all_results if r["h"] == h_val and r["L"] == l_val],
-                key=lambda r: r["N"],
-            )
-            ns         = [r["N"] for r in subset]
-            exact_vals = [r["exact"] for r in subset]
-
-            ax.plot(ns, exact_vals, "k--", lw=2, label="Exact (ED)", zorder=10)
-            for config_name, sty in STYLE.items():
-                means = np.array([r[config_name]["mean"] for r in subset])
-                sems  = np.array([r[config_name]["sem"]  for r in subset])
-                ax.plot(ns, means, color=sty["color"], marker=sty["marker"],
-                        linestyle=sty["ls"], linewidth=sty["lw"], label=config_name)
-                ax.fill_between(ns, means - sems, means + sems,
-                                color=sty["color"], alpha=0.12)
-
-            ax.set_xticks(ns)
-            ax.grid(True, alpha=0.3, linestyle=":")
-            if h_idx == 0:
-                ax.set_title(f"Depth  L = {l_val}", fontsize=12)
-            if l_idx == 0:
-                ax.set_ylabel(f"{PHASE_LABELS[h_val]}\n<H>", fontsize=10)
-            if h_idx == len(cfg.h_fields) - 1:
-                ax.set_xlabel("System Size  N  (qubits)", fontsize=10)
-
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=5,
-               bbox_to_anchor=(0.5, -0.02), fontsize=9, framealpha=0.9)
-    plt.tight_layout(rect=[0, 0.06, 1, 0.96])
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_absolute_energy.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_absolute_energy.pdf")
-
-    # ── Zoomed figure: one (N, h, L) point, all configs, SEM bars visible ────
-    zoom_match = [
-        r for r in all_results
-        if r["N"] == zoom_N and r["h"] == zoom_h and r["L"] == zoom_L
-    ]
-    if not zoom_match:
-        logger.warning("No data for zoom point N=%d h=%.1f L=%d", zoom_N, zoom_h, zoom_L)
+    if not subset:
         return
 
-    r = zoom_match[0]
-    fig2, ax2 = plt.subplots(figsize=(7, 4))
-    ax2.set_title(
-        f"Energy Estimates at N={zoom_N}, h={zoom_h}, L={zoom_L}  "
-        f"(error bars = ±1 SEM)",
-        fontsize=12,
-    )
+    ns = [r["N"] for r in subset]
 
-    x_positions = np.arange(len(STYLE))
-    for i, (config_name, sty) in enumerate(STYLE.items()):
-        mean = r[config_name]["mean"]
-        sem  = r[config_name]["sem"]
-        ax2.bar(i, mean, color=sty["color"], alpha=0.7, width=0.7,
-                label=config_name)
-        ax2.errorbar(i, mean, yerr=sem, fmt="none",
-                     color="black", capsize=5, linewidth=1.5)
+    # ── Panel-optimised figure ────────────────────────────────────────────
+    fig, ax = plt.subplots(figsize=(_PANEL_W, _PANEL_H))
 
-    ax2.axhline(r["exact"], color="black", linestyle="--", linewidth=2,
-                label="Exact (ED)")
-    ax2.set_xticks(x_positions)
-    ax2.set_xticklabels(list(STYLE.keys()), rotation=30, ha="right", fontsize=9)
-    ax2.set_ylabel("<H>", fontsize=11)
-    ax2.grid(True, axis="y", alpha=0.3)
-    ax2.legend(fontsize=8, loc="upper right")
-    plt.tight_layout()
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_absolute_energy_zoom.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_absolute_energy_zoom.pdf")
+    # Override font sizes for panel legibility
+    ax.tick_params(labelsize=10)
+    ax.xaxis.label.set_size(11)
+    ax.yaxis.label.set_size(11)
+
+    for cfg_name in configs:
+        sty      = _PANEL_STYLE[cfg_name]
+        rel_errs = np.array([r[cfg_name]["rel_err"] for r in subset])
+        sems     = np.array([r[cfg_name]["sem"]     for r in subset])
+        exact_a  = np.array([abs(r["exact"])        for r in subset])
+        rel_sems = sems / np.maximum(exact_a, 1e-12)
+
+        ax.semilogy(
+            ns, rel_errs,
+            color=sty["color"], marker=sty["marker"],
+            linestyle=sty["ls"], linewidth=sty["lw"], markersize=sty["ms"],
+            label=_LABELS[cfg_name],
+        )
+        ax.fill_between(
+            ns,
+            np.maximum(rel_errs - rel_sems, 1e-6),
+            rel_errs + rel_sems,
+            color=sty["color"], alpha=0.12, linewidth=0,
+        )
+
+    ax.set_xlabel("System size $N$ (qubits)")
+    ax.set_ylabel(r"Relative error $\epsilon$")
+    ax.set_xticks(ns)
+    ncol = 2 if len(configs) > 4 else 1
+    ax.legend(handles=_legend_handles(configs, panel=True),
+              ncol=ncol, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=8,
+              handlelength=1.5, handletextpad=0.4,
+              borderpad=0.3, labelspacing=0.25)
+    fig.tight_layout()
+    _save(fig, path)
+
+
+def plot_relative_error(
+    results:    list[dict],
+    device_tag: str,
+) -> None:
+    Ns, hs, Ls = _infer_axes(results)
+
+    for h_val in hs:
+        for l_val in Ls:
+            for variant, configs in [("individual", _INDIVIDUAL),
+                                      ("combined",   _COMBINED)]:
+                fname = (f"rel_err_{variant}_{device_tag}"
+                         f"_{_hstr(h_val)}_L{l_val}.pdf")
+                _plot_rel_err_panel(
+                    results, h_val, l_val, configs, Ns,
+                    os.path.join(CFG.plots_dir, fname),
+                )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3. Convergence as normalised relative error
+# 2.2  VQE convergence — one panel per (L, h)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def plot_convergence(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
+    results:    list[dict],
+    device_tag: str,
 ) -> None:
-    """
-    VQE convergence as normalised relative error.
+    Ns, hs, Ls = _infer_axes(results)
+    cmap   = plt.cm.Blues
+    shades = np.linspace(0.30, 0.85, len(Ns))
 
-    y-axis: (E_noisy(iter) - E_exact(N)) / |E_exact(N)|
-    This is dimensionless and comparable across all N.
-    Target is 0 (which is the x-axis itself). No reference line needed.
+    for l_val in Ls:
+        for h_val in hs:
+            # ── Panel-optimised figure ────────────────────────────────────
+            fig, ax = plt.subplots(figsize=(_PANEL_W, _PANEL_H))
+            ax.tick_params(labelsize=10)
+            ax.xaxis.label.set_size(11)
+            ax.yaxis.label.set_size(11)
 
-    Rows = L (depth), Columns = h (phase).
-    All N values overlaid per panel, light-to-dark blue = small-to-large N.
-
-    Note: brief dips below 0 are physical (shot noise can push the noisy
-    energy below the variational bound momentarily). They are NOT errors.
-    """
-    n_rows = len(cfg.layers)
-    n_cols = len(cfg.h_fields)
-
-    fig, axes = plt.subplots(n_rows, n_cols,
-                             figsize=(5 * n_cols, 3.5 * n_rows))
-    if n_rows == 1:
-        axes = axes[np.newaxis, :]
-
-    fig.suptitle(
-        "VQE Convergence  |  Relative Error During Optimisation",
-        fontsize=14, fontweight="bold",
-    )
-
-    cmap    = plt.cm.Blues
-    colours = np.linspace(0.35, 0.92, len(cfg.system_sizes))
-
-    for l_idx, l_val in enumerate(cfg.layers):
-        for h_idx, h_val in enumerate(cfg.h_fields):
-            ax = axes[l_idx, h_idx]
-
-            for n_idx, N in enumerate(cfg.system_sizes):
-                match = [r for r in all_results
+            for n_idx, N in enumerate(Ns):
+                match = [r for r in results
                          if r["N"] == N and r["L"] == l_val and r["h"] == h_val]
                 if not match:
                     continue
 
-                # Use pre-computed normalised convergence from benchmark.py
                 conv_rel = match[0].get("convergence_rel")
                 if conv_rel is None:
-                    # Fallback: compute on the fly from raw history
-                    exact = match[0]["exact"]
-                    conv_raw = match[0].get("convergence_raw", match[0].get("convergence", []))
+                    exact    = match[0]["exact"]
+                    conv_raw = match[0].get("convergence_raw",
+                                            match[0].get("convergence", []))
                     conv_rel = [
                         abs(e - exact) / abs(exact) if exact != 0 else float("nan")
                         for e in conv_raw
                     ]
+                if not conv_rel:
+                    continue
 
                 ax.semilogy(
                     range(len(conv_rel)), conv_rel,
-                    color=cmap(colours[n_idx]),
-                    linewidth=1.2, label=f"N={N}",
+                    color=cmap(shades[n_idx]),
+                    linewidth=1.4,
+                    label=f"$N={N}$",
                 )
 
-            if l_idx == 0:
-                ax.set_title(f"{PHASE_LABELS[h_val]}", fontsize=11)
-            if h_idx == 0:
-                ax.set_ylabel(f"L={l_val}\n|E−E₀|/|E₀|", fontsize=10)
-            if l_idx == n_rows - 1:
-                ax.set_xlabel("Optimiser Iteration", fontsize=10)
+            ax.set_xlabel("Optimiser iteration")
+            ax.set_ylabel(r"Relative error $\epsilon$")
+            ax.legend(ncol=2, loc="upper right", fontsize=8,
+                      handlelength=1.2, handletextpad=0.3,
+                      borderpad=0.3, labelspacing=0.2,
+                      columnspacing=0.6)
+            fig.tight_layout()
 
-            # Zero reference: dashed grey line at 0.0 on log scale is not
-            # possible, so instead draw at a small epsilon as visual guide
-            ax.axhline(1e-2, color="grey", linestyle=":", alpha=0.4, linewidth=0.8)
-            ax.grid(True, which="both", alpha=0.25, linestyle=":")
-            ax.legend(fontsize=7, ncol=2, loc="upper right")
-
-    plt.tight_layout()
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_convergence.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_convergence.pdf")
+            fname = f"convergence_{device_tag}_L{l_val}_{_hstr(h_val)}.pdf"
+            _save(fig, os.path.join(CFG.plots_dir, fname))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 4. Cost vs error — Pareto frontier, measured parity discard
+# 2.3  Pareto frontier — one panel per h value
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _pareto_frontier(points: np.ndarray) -> np.ndarray:
-    """
-    Returns mask of Pareto-optimal points (lower cost AND lower error).
-    A point is Pareto-optimal if no other point beats it on both axes.
-
-    Parameters
-    ----------
-    points : np.ndarray, shape (M, 2)
-        Column 0 = effective overhead (lower is better).
-        Column 1 = median relative error (lower is better).
-
-    Returns
-    -------
-    np.ndarray, shape (M,), dtype bool
-        True where point is on the Pareto frontier.
-    """
+def _pareto_mask(points: np.ndarray) -> np.ndarray:
     M = len(points)
-    on_frontier = np.ones(M, dtype=bool)
+    mask = np.ones(M, dtype=bool)
     for i in range(M):
         for j in range(M):
             if i == j:
                 continue
-            # j dominates i if j is strictly better on at least one axis
-            # and no worse on the other
-            if points[j, 0] <= points[i, 0] and points[j, 1] <= points[i, 1]:
-                if points[j, 0] < points[i, 0] or points[j, 1] < points[i, 1]:
-                    on_frontier[i] = False
-                    break
-    return on_frontier
+            if (points[j, 0] <= points[i, 0] and
+                    points[j, 1] <= points[i, 1] and
+                    (points[j, 0] < points[i, 0] or points[j, 1] < points[i, 1])):
+                mask[i] = False
+                break
+    return mask
 
 
-def plot_cost_vs_error(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
+def plot_pareto(
+    results:    list[dict],
+    device_tag: str,
 ) -> None:
-    """
-    Pareto frontier cost-benefit plot, faceted by phase (h value).
+    Ns, hs, Ls = _infer_axes(results)
+    non_raw = [c for c in _STYLE if c != "raw"]
 
-    Three panels, one per h value. Each panel shows:
-        - One point per mitigation config (x = effective overhead, y = median rel error)
-        - Effective overhead uses MEASURED parity discard fraction (not assumed 50%)
-        - Pareto frontier drawn as a step line
-        - Methods on the frontier are labelled; dominated methods unlabelled
+    for h_val in hs:
+        h_results = [r for r in results if r["h"] == h_val]
 
-    Effective overhead = overhead_amortised * shot_multiplier
-    where shot_multiplier = 1/(1-measured_discard_fraction).
-
-    Why a Pareto plot rather than a scatter:
-        A Pareto plot directly answers the question "given a computational
-        budget, which method achieves the lowest error?" Methods on the
-        frontier are the rational choices; methods inside it are dominated
-        (another method achieves both lower error and lower cost).
-    """
-    fig, axes = plt.subplots(1, len(cfg.h_fields),
-                             figsize=(5.5 * len(cfg.h_fields), 5),
-                             sharey=False)
-    fig.suptitle(
-        "Mitigation Cost vs Error Reduction  |  Pareto Frontier by Phase\n"
-        "(x-axis uses measured parity discard fraction, not assumed 50%)",
-        fontsize=13, fontweight="bold",
-    )
-
-    non_raw_configs = [c for c in STYLE if c != "raw"]
-
-    for h_idx, h_val in enumerate(cfg.h_fields):
-        ax = axes[h_idx]
-        h_results = [r for r in all_results if r["h"] == h_val]
-
-        # For each config compute: median effective overhead and median rel error
-        config_points: dict[str, tuple[float, float]] = {}
-
-        for config_name in non_raw_configs:
-            overheads = []
-            errors    = []
+        config_pts: dict[str, tuple[float, float]] = {}
+        for cfg_name in non_raw:
+            overheads, errors = [], []
             for r in h_results:
-                cost_dict = r[config_name].get("cost", {})
-                overhead  = cost_dict.get("overhead_effective")
-                rel_err   = r[config_name]["rel_err"]
-                if overhead is not None and not np.isnan(rel_err):
-                    overheads.append(overhead)
-                    errors.append(rel_err)
-
-            if not overheads:
-                continue
-
-            config_points[config_name] = (
-                float(np.median(overheads)),
-                float(np.median(errors)),
-            )
-
-        if not config_points:
-            ax.set_title(f"{PHASE_LABELS[h_val]}")
-            continue
-
-        # Also add raw as reference (overhead=1.0, use its median error)
-        raw_errors = [r["raw"]["rel_err"] for r in h_results
-                      if not np.isnan(r["raw"]["rel_err"])]
-        if raw_errors:
-            config_points["raw"] = (1.0, float(np.median(raw_errors)))
-
-        # Compute Pareto frontier
-        names  = list(config_points.keys())
-        pts    = np.array([config_points[n] for n in names])
-        front  = _pareto_frontier(pts)
-
-        # Plot all points
-        for i, name in enumerate(names):
-            sty = STYLE[name]
-            x, y = pts[i]
-            marker_size = 180 if front[i] else 80
-            edge_width  = 2.0 if front[i] else 0.5
-            ax.scatter(x, y,
-                       color=sty["color"], marker=sty["marker"],
-                       s=marker_size, zorder=5,
-                       edgecolors="black", linewidths=edge_width,
-                       alpha=1.0 if front[i] else 0.45,
-                       label=name)
-            # Label only Pareto-optimal points to avoid clutter
-            if front[i]:
-                ax.annotate(
-                    name,
-                    (x, y),
-                    textcoords="offset points",
-                    xytext=(6, 4),
-                    fontsize=7.5,
-                    color=sty["color"],
-                    fontweight="bold",
+                oh  = r[cfg_name].get("cost", {}).get("overhead_effective")
+                err = r[cfg_name]["rel_err"]
+                if oh is not None and not np.isnan(err):
+                    overheads.append(oh)
+                    errors.append(err)
+            if overheads:
+                config_pts[cfg_name] = (
+                    float(np.median(overheads)),
+                    float(np.median(errors)),
                 )
 
-        # Draw Pareto frontier step line
+        raw_errs = [r["raw"]["rel_err"] for r in h_results
+                    if not np.isnan(r["raw"]["rel_err"])]
+        if raw_errs:
+            config_pts["raw"] = (1.0, float(np.median(raw_errs)))
+        if not config_pts:
+            continue
+
+        names  = list(config_pts.keys())
+        pts    = np.array([config_pts[n] for n in names])
+        front  = _pareto_mask(pts)
+
+        # ── Panel-optimised figure (displayed at 0.32\textwidth) ──────────
+        fig, ax = plt.subplots(figsize=(_TRIPLET_W, _TRIPLET_H))
+        ax.tick_params(labelsize=10)
+        ax.xaxis.label.set_size(11)
+        ax.yaxis.label.set_size(11)
+
+        for i, name in enumerate(names):
+            sty = _PANEL_STYLE[name]
+            x, y = pts[i]
+            is_f = front[i]
+            ax.scatter(
+                x, y,
+                color=sty["color"], marker=sty["marker"],
+                s=70 if is_f else 35,
+                edgecolors="0.3" if is_f else "none",
+                linewidths=0.9,
+                alpha=1.0 if is_f else 0.40,
+                zorder=4,
+            )
+            if is_f:
+                ax.annotate(
+                    _LABELS[name], (x, y),
+                    textcoords="offset points", xytext=(5, 4),
+                    fontsize=8, color=sty["color"], fontweight="bold",
+                )
+
         front_pts = pts[front]
         if len(front_pts) > 1:
             order = np.argsort(front_pts[:, 0])
             fp    = front_pts[order]
             ax.step(fp[:, 0], fp[:, 1], where="post",
-                    color="black", linestyle="--", linewidth=1.2,
-                    alpha=0.5, zorder=3, label="Pareto frontier")
+                    color="0.35", linestyle="--", linewidth=1.0, alpha=0.6, zorder=3)
+
+        disc_vals = [
+            r["parity"]["parity_discard"] for r in h_results
+            if not np.isnan(r["parity"].get("parity_discard", float("nan")))
+        ]
+        if disc_vals:
+            ax.text(0.97, 0.97,
+                    f"Median parity discard: {np.median(disc_vals):.1%}",
+                    transform=ax.transAxes, fontsize=8,
+                    ha="right", va="top", color="0.45")
 
         ax.set_xlabel(
-            "Effective Overhead  (× raw)\n"
-            "= circuit overhead × 1/(1−measured parity discard)",
-            fontsize=9,
+            r"Effective circuit overhead $\Omega_\mathrm{eff}$  $(\times\,\mathrm{raw})$"
         )
-        if h_idx == 0:
-            ax.set_ylabel("Median Relative Error  |E−E₀|/|E₀|", fontsize=10)
-        ax.set_title(f"{PHASE_LABELS[h_val]}", fontsize=11)
+        ax.set_ylabel(r"Median relative error $\epsilon$")
         ax.set_yscale("log")
-        ax.grid(True, which="both", alpha=0.25, linestyle=":")
 
-        # Add note on parity discard
-        parity_results = [r for r in h_results if "parity" in r]
-        if parity_results:
-            sample_discards = [
-                r["parity"]["parity_discard"]
-                for r in h_results
-                if not np.isnan(r["parity"].get("parity_discard", float("nan")))
-            ]
-            if sample_discards:
-                med_discard = np.median(sample_discards)
-                ax.text(
-                    0.97, 0.97,
-                    f"Measured parity\ndiscard: {med_discard:.1%}",
-                    transform=ax.transAxes,
-                    fontsize=7.5, ha="right", va="top", color="grey",
-                    bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-                )
+        scatter_handles = [
+            plt.scatter([], [], color=_PANEL_STYLE[c]["color"],
+                        marker=_PANEL_STYLE[c]["marker"], s=35, label=_LABELS[c])
+            for c in _STYLE
+        ]
+        ax.legend(handles=scatter_handles, ncol=2, loc="upper right",
+                  fontsize=7.5, handletextpad=0.3, columnspacing=0.6)
 
-    # Shared legend at bottom
-    handles = [
-        plt.scatter([], [], color=STYLE[c]["color"], marker=STYLE[c]["marker"],
-                    s=80, label=c)
-        for c in list(STYLE.keys())
-    ]
-    fig.legend(handles=handles, loc="lower center", ncol=4,
-               bbox_to_anchor=(0.5, -0.04), fontsize=8.5, framealpha=0.9)
-    plt.tight_layout(rect=[0, 0.08, 1, 0.95])
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_cost_vs_error.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_cost_vs_error.pdf")
+        fig.tight_layout()
+        fname = f"pareto_{device_tag}_{_hstr(h_val)}.pdf"
+        _save(fig, os.path.join(CFG.plots_dir, fname))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 5. Error scaling with N
+# 2.4  Heatmap helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
-def plot_error_scaling(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
-    fit_from_N: int = 4,
-) -> None:
-    """
-    Fits and plots rel_error ∝ N^alpha for each (h, L, config).
+def _heatmap(
+    ax:         plt.Axes,
+    data:       np.ndarray,
+    row_labels: list[str],
+    col_labels: list[str],
+    vmin:       float,
+    vmax:       float,
+    cmap:       str,
+    fmt:        str = ".2f",
+) -> matplotlib.image.AxesImage:
+    im = ax.imshow(data, vmin=vmin, vmax=vmax, cmap=cmap,
+                   aspect="auto", origin="lower")
+    ax.set_xticks(range(len(col_labels)))
+    ax.set_xticklabels(col_labels)
+    ax.set_yticks(range(len(row_labels)))
+    ax.set_yticklabels(row_labels)
+    ax.tick_params(labelleft=True)
+    thresh = vmin + 0.6 * (vmax - vmin)
+    for ni in range(len(row_labels)):
+        for hi in range(len(col_labels)):
+            val = data[ni, hi]
+            if not np.isnan(val):
+                ax.text(hi, ni, format(val, fmt),
+                        ha="center", va="center", fontsize=9,
+                        color="white" if val > thresh else "black")
+    return im
 
-    The slope alpha in a log-log regression of relative error vs N
-    quantifies how rapidly each method's accuracy degrades with system size.
-    Smaller alpha = more robust scaling.
 
-    Uses only N >= fit_from_N to avoid the anomalously good N=2 results
-    (the HEA exactly represents the N=2 ground state at any L>=1).
-
-    Produces:
-        - plot_error_scaling.pdf: log-log scatter + fit lines, faceted by h
-        - Prints a table of alpha values per (h, L, config) to console
-    """
-    fig, axes = plt.subplots(
-        len(cfg.h_fields), len(cfg.layers),
-        figsize=(5 * len(cfg.layers), 4 * len(cfg.h_fields)),
-    )
-    fig.suptitle(
-        r"Error Scaling  $\epsilon \propto N^\alpha$  |  1D TFIM VQE",
-        fontsize=14, fontweight="bold",
-    )
-
-    print("\n" + "="*70)
-    print(f"{'h':>4}  {'L':>2}  {'config':>16}  {'alpha':>6}  {'alpha_err':>9}")
-    print("="*70)
-
-    for h_idx, h_val in enumerate(cfg.h_fields):
-        for l_idx, l_val in enumerate(cfg.layers):
-            ax = axes[h_idx, l_idx]
-
-            subset = sorted(
-                [r for r in all_results
-                 if r["h"] == h_val and r["L"] == l_val and r["N"] >= fit_from_N],
-                key=lambda r: r["N"],
-            )
-            if len(subset) < 3:
-                ax.set_title(f"L={l_val}, h={h_val} — insufficient data")
-                continue
-
-            ns = np.array([r["N"] for r in subset], dtype=float)
-            log_ns = np.log(ns)
-
-            for config_name, sty in STYLE.items():
-                rel_errs = np.array([r[config_name]["rel_err"] for r in subset])
-                valid    = ~np.isnan(rel_errs) & (rel_errs > 0)
-                if valid.sum() < 2:
-                    continue
-
-                log_err = np.log(rel_errs[valid])
-                log_n_v = log_ns[valid]
-
-                # Linear fit in log-log space: log(err) = alpha*log(N) + beta
-                coeffs, cov = np.polyfit(log_n_v, log_err, 1, cov=True)
-                alpha     = coeffs[0]
-                alpha_err = np.sqrt(cov[0, 0])
-
-                # Plot scatter
-                ax.scatter(ns[valid], rel_errs[valid],
-                           color=sty["color"], marker=sty["marker"],
-                           s=40, alpha=0.7, zorder=3)
-
-                # Plot fit line over continuous N range
-                n_fit   = np.linspace(fit_from_N, ns[-1], 50)
-                err_fit = np.exp(coeffs[1]) * n_fit ** alpha
-                ax.loglog(n_fit, err_fit,
-                          color=sty["color"], linestyle="--",
-                          linewidth=1.0, alpha=0.6,
-                          label=f"{config_name} (α={alpha:.2f})")
-
-                print(f"{h_val:>4.1f}  {l_val:>2}  {config_name:>16}  "
-                      f"{alpha:>6.3f}  ±{alpha_err:.3f}")
-
-            ax.set_xticks(ns.astype(int))
-            ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
-            ax.grid(True, which="both", alpha=0.3, linestyle=":")
-            if h_idx == 0:
-                ax.set_title(f"Depth  L = {l_val}", fontsize=11)
-            if l_idx == 0:
-                ax.set_ylabel(f"{PHASE_LABELS[h_val]}\nRelative Error", fontsize=10)
-            if h_idx == len(cfg.h_fields) - 1:
-                ax.set_xlabel("N  (qubits)", fontsize=10)
-            ax.legend(fontsize=6, loc="upper left")
-
-    print("="*70 + "\n")
-    plt.tight_layout(rect=[0, 0.02, 1, 0.97])
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_error_scaling.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_error_scaling.pdf")
+def _heatmap_fig(data, row_labels, col_labels, vmin, vmax, cmap,
+                 xlabel, ylabel, cbar_label, fmt=".2f"):
+    """Single-panel heatmap figure at triplet size."""
+    fig, ax = plt.subplots(figsize=(_TRIPLET_W, _TRIPLET_H))
+    ax.tick_params(labelsize=10)
+    ax.xaxis.label.set_size(11)
+    ax.yaxis.label.set_size(11)
+    im = _heatmap(ax, data, row_labels, col_labels, vmin, vmax, cmap, fmt)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.set_label(cbar_label, fontsize=10)
+    cbar.ax.tick_params(labelsize=9)
+    fig.tight_layout()
+    return fig
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 6. Parity discard fraction heatmap  (shows measured waste per regime)
+# 2.5  Parity discard heatmap — one panel per L
 # ─────────────────────────────────────────────────────────────────────────────
 
 def plot_parity_discard(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
+    results:    list[dict],
+    device_tag: str,
 ) -> None:
-    """
-    Heatmap of measured parity discard fraction vs (N, h) for each L.
+    Ns, hs, Ls = _infer_axes(results)
+    row_labels = [f"$N={N}$" for N in Ns]
+    col_labels = [f"$h={h}$" for h in hs]
 
-    This replaces the assumed 50% with empirical data. Reveals:
-        - Ordered phase (h=0.5): low discard (ground state has mostly even parity)
-        - Disordered/high noise: higher discard
-        - Larger N: more gates = more errors = higher discard
-    """
-    from matplotlib.colors import Normalize
-    from matplotlib.cm import ScalarMappable
-
-    n_layers = len(cfg.layers)
-    fig, axes = plt.subplots(1, n_layers, figsize=(4.5 * n_layers, 4))
-    fig.suptitle(
-        "Measured Parity Discard Fraction  |  parity config, both bases",
-        fontsize=13, fontweight="bold",
-    )
-
-    vmin, vmax = 0.0, 0.5
-
-    for l_idx, l_val in enumerate(cfg.layers):
-        ax = axes[l_idx]
-        matrix = np.full((len(cfg.system_sizes), len(cfg.h_fields)), np.nan)
-
-        for n_idx, N in enumerate(cfg.system_sizes):
-            for h_idx, h_val in enumerate(cfg.h_fields):
-                match = [r for r in all_results
-                         if r["N"] == N and r["h"] == h_val and r["L"] == l_val]
+    for l_val in Ls:
+        data = np.full((len(Ns), len(hs)), np.nan)
+        for ni, N in enumerate(Ns):
+            for hi, h in enumerate(hs):
+                match = [r for r in results
+                         if r["N"] == N and r["h"] == h and r["L"] == l_val]
                 if match:
-                    d = match[0]["parity"].get("parity_discard", np.nan)
-                    matrix[n_idx, h_idx] = d
+                    data[ni, hi] = match[0]["parity"].get("parity_discard", np.nan)
 
-        im = ax.imshow(matrix, vmin=vmin, vmax=vmax, cmap="YlOrRd",
-                       aspect="auto", origin="lower")
-        ax.set_xticks(range(len(cfg.h_fields)))
-        ax.set_xticklabels([f"h={h}" for h in cfg.h_fields], fontsize=9)
-        ax.set_yticks(range(len(cfg.system_sizes)))
-        ax.set_yticklabels([f"N={N}" for N in cfg.system_sizes], fontsize=9)
-        ax.set_title(f"L = {l_val}", fontsize=11)
-
-        for n_idx in range(len(cfg.system_sizes)):
-            for h_idx in range(len(cfg.h_fields)):
-                val = matrix[n_idx, h_idx]
-                if not np.isnan(val):
-                    ax.text(h_idx, n_idx, f"{val:.2f}",
-                            ha="center", va="center", fontsize=8,
-                            color="white" if val > 0.3 else "black")
-
-    fig.colorbar(im, ax=axes.tolist(), label="Discard Fraction", shrink=0.8)
-    plt.tight_layout()
-    plt.savefig(os.path.join(CFG.plots_dir, "plot_parity_discard.pdf"), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: plot_parity_discard.pdf")
-
+        fig = _heatmap_fig(
+            data, row_labels, col_labels,
+            vmin=0.0, vmax=0.5, cmap="YlOrRd",
+            xlabel="Transverse field $h$",
+            ylabel="System size $N$",
+            cbar_label=r"Discard fraction $f_\mathrm{discard}$",
+        )
+        fname = f"parity_discard_{device_tag}_L{l_val}.pdf"
+        _save(fig, os.path.join(CFG.plots_dir, fname))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 7. Parity discard comparison (parity vs ro+parity)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def plot_parity_discard_comparison(
-    all_results: list[dict],
-    cfg: BenchmarkConfig = CFG,
-    fname: str = "plot_parity_discard_comparison.pdf",
-) -> None:
-    """
-    Heatmap comparison of parity discard fraction for 'parity' vs 'ro+parity'.
-
-    Layout: three columns (one per L), two rows (parity | ro+parity).
-    Each cell shows the mean discard fraction across n_reps, annotated
-    with the numerical value.
-
-    Colour scale matches the existing plot_parity_discard function:
-        white/yellow = low discard (0.0), dark red = high discard (0.5).
-    Colourmap: YlOrRd, vmin=0.0, vmax=0.5.
-
-    Physical interpretation: readout correction reduces the effective
-    bit-flip probability per qubit from (p_readout + p_gate) to approximately
-    p_gate, lowering the probability that an odd number of errors has occurred.
-    The discard reduction is most pronounced at large N, where the accumulated
-    per-qubit errors compound multiplicatively via (1-2p)^N.
-
-    Generatable from existing JSON data — no rerun required.
-    The 'ro+parity' config already records its measured parity_discard.
-
-    Parameters
-    ----------
-    all_results : list[dict]
-        Output of load_results() — the standard benchmark results.
-    cfg : BenchmarkConfig
-        Configuration (uses cfg.h_fields, cfg.layers, cfg.system_sizes).
-    fname : str
-        Output filename. Saved to CFG.plots_dir.
-    """
-    n_rows = 2
-    n_cols = len(cfg.layers)
-    config_names = ["parity", "ro+parity"]
-    row_labels   = ["Parity only", "Readout + Parity"]
-
-    fig, axes = plt.subplots(
-        n_rows, n_cols,
-        figsize=(4.5 * n_cols, 3.5 * n_rows),
-    )
-    fig.suptitle(
-        "Parity Discard Fraction: Effect of Readout Correction\n"
-        "(rows = mitigation config, columns = ansatz depth L)",
-        fontsize=13, fontweight="bold",
-    )
-
-    # Colour scale matches plot_parity_discard exactly
-    vmin, vmax = 0.0, 0.5
-    cmap = "YlOrRd"
-
-    Ns = sorted(cfg.system_sizes)
-    hs = list(cfg.h_fields)
-
-    im = None  # will be set inside loop; used for shared colourbar
-
-    for row_idx, config_name in enumerate(config_names):
-        for col_idx, L_val in enumerate(cfg.layers):
-            ax = axes[row_idx, col_idx]
-
-            # Build (N, h) data matrix — same order as plot_parity_discard
-            data = np.full((len(Ns), len(hs)), np.nan)
-            for n_idx, N in enumerate(Ns):
-                for h_idx, h in enumerate(hs):
-                    match = [
-                        r for r in all_results
-                        if r["N"] == N and r["h"] == h and r["L"] == L_val
-                    ]
-                    if match and config_name in match[0]:
-                        data[n_idx, h_idx] = match[0][config_name]["parity_discard"]
-
-            # origin="lower" so that small N is at the bottom — matches
-            # the convention in the existing plot_parity_discard function
-            im = ax.imshow(
-                data,
-                vmin=vmin, vmax=vmax,
-                cmap=cmap,
-                aspect="auto",
-                origin="lower",
-            )
-
-            # Annotate each cell with the numerical value.
-            # White text when background is dark (high discard); black otherwise.
-            for n_idx in range(len(Ns)):
-                for h_idx in range(len(hs)):
-                    val = data[n_idx, h_idx]
-                    if not np.isnan(val):
-                        text_color = "white" if val > 0.35 else "black"
-                        ax.text(
-                            h_idx, n_idx,
-                            f"{val:.2f}",
-                            ha="center", va="center",
-                            fontsize=9, color=text_color, fontweight="bold",
-                        )
-
-            # X-axis: h values
-            ax.set_xticks(range(len(hs)))
-            ax.set_xticklabels([f"h={h}" for h in hs], fontsize=9)
-
-            # Y-axis: system sizes — force labels on every panel to avoid
-            # matplotlib suppressing them on interior subplots
-            ax.set_yticks(range(len(Ns)))
-            ax.set_yticklabels([f"N={N}" for N in Ns], fontsize=9)
-            ax.tick_params(labelleft=True)  # never suppress y-labels
-
-            # Column header (depth L) — top row only
-            if row_idx == 0:
-                ax.set_title(f"Depth  L = {L_val}", fontsize=11)
-
-            # Row label (config name) — left column only
-            if col_idx == 0:
-                ax.set_ylabel(row_labels[row_idx], fontsize=10, fontweight="bold")
-
-    # Shared colourbar on the right, matching plot_parity_discard style
-    fig.subplots_adjust(right=0.88)
-    cbar_ax = fig.add_axes([0.91, 0.15, 0.02, 0.7])
-    cbar = fig.colorbar(im, cax=cbar_ax)
-    cbar.set_label("Discard Fraction", fontsize=10)
-    cbar.set_ticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
-
-    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: %s", fname)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 8. Parity discard difference map (ro+parity minus parity)
-# This companion figure shows WHERE the readout correction helps most.
+# 2.6  Parity discard delta heatmap — one panel per L
 # ─────────────────────────────────────────────────────────────────────────────
 
 def plot_parity_discard_delta(
-        all_results: list[dict],
-        cfg: BenchmarkConfig = CFG,
-        fname: str = "plot_parity_discard_delta.pdf",
+    results:    list[dict],
+    device_tag: str,
+) -> None:
+    Ns, hs, Ls = _infer_axes(results)
+    row_labels = [f"$N={N}$" for N in Ns]
+    col_labels = [f"$h={h}$" for h in hs]
+
+    for l_val in Ls:
+        data = np.full((len(Ns), len(hs)), np.nan)
+        for ni, N in enumerate(Ns):
+            for hi, h in enumerate(hs):
+                match = [r for r in results
+                         if r["N"] == N and r["h"] == h and r["L"] == l_val]
+                if match:
+                    r  = match[0]
+                    p  = r.get("parity",    {}).get("parity_discard", np.nan)
+                    rp = r.get("ro+parity", {}).get("parity_discard", np.nan)
+                    data[ni, hi] = p - rp
+
+        valid   = data[~np.isnan(data)]
+        abs_max = max(abs(valid.min()), abs(valid.max()), 0.02) if len(valid) else 0.1
+
+        fig = _heatmap_fig(
+            data, row_labels, col_labels,
+            vmin=-abs_max, vmax=abs_max, cmap="RdBu",
+            xlabel="Transverse field $h$",
+            ylabel="System size $N$",
+            cbar_label=r"$\Delta f_\mathrm{discard}$  (parity $-$ ro+parity)",
+            fmt="+.2f",
+        )
+        fname = f"parity_discard_delta_{device_tag}_L{l_val}.pdf"
+        _save(fig, os.path.join(CFG.plots_dir, fname))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2.7  Convenience wrapper: all six benchmark plots for one device
+# ─────────────────────────────────────────────────────────────────────────────
+
+def plot_all_benchmark(results: list[dict], device_tag: str) -> None:
+    if not results:
+        logger.warning("No results for device '%s' — skipping.", device_tag)
+        return
+    logger.info("Generating benchmark plots for %s (%d result files) …",
+                device_tag, len(results))
+    plot_relative_error(results, device_tag)
+    plot_convergence(results, device_tag)
+    plot_pareto(results, device_tag)
+    plot_parity_discard(results, device_tag)
+    plot_parity_discard_delta(results, device_tag)
+    logger.info("Benchmark plots done for %s.", device_tag)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# §3  ZNE noise study plots
+# ═════════════════════════════════════════════════════════════════════════════
+
+def plot_zne_noise_comparison(
+    noise_model_results: list[dict],
+    fname: str = "plot_zne_noise_comparison.pdf",
 ) -> None:
     """
-    Heatmap of the REDUCTION in parity discard: (parity - ro+parity).
-
-    Positive values = readout correction reduces discards (beneficial).
-    Negative values = readout correction increases discards (unexpected,
-        could indicate pathological regime).
-
-    This plot quantifies how much readout correction "rescues" the parity
-    discard fraction by reducing the effective per-qubit error probability.
-    The theoretical prediction is that the reduction grows with N, following
-    the formula derived in Section 2.4 of the report.
-
-    Parameters
-    ----------
-    all_results : list[dict]
-        Output of load_results().
-    cfg : BenchmarkConfig
-    fname : str
-        Output filename.
+    Grouped bar chart: raw vs ZNE relative error for each noise model.
+    Full-width figure — displayed at 0.8\\textwidth in LaTeX.
     """
-    n_cols = len(cfg.layers)
-    Ns = sorted(cfg.system_sizes)
-    hs = list(cfg.h_fields)
+    if not noise_model_results:
+        logger.error("plot_zne_noise_comparison: empty input.")
+        return
 
-    fig, axes = plt.subplots(
-        1, n_cols,
-        figsize=(4.5 * n_cols, 3.5),
+    _NM_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#9467bd", "#8c564b"]
+    n_models   = len(noise_model_results)
+    w          = 0.35
+
+    fig, ax = plt.subplots(figsize=(_TW, _FH))
+
+    for nm_idx, nm in enumerate(noise_model_results):
+        exact  = nm["exact"]
+        colour = _NM_COLORS[nm_idx % len(_NM_COLORS)]
+        label  = nm.get("label", f"Model {nm_idx + 1}")
+
+        raw_err = abs(nm["raw_energy"] - exact) / abs(exact)
+        raw_sem = nm.get("raw_sem", 0.0) / abs(exact)
+        zne_err = abs(nm["zne_energy"] - exact) / abs(exact)
+        zne_sem = nm.get("zne_sem", 0.0) / abs(exact)
+
+        offset_raw = (2 * nm_idx - n_models + 0.5) * w
+        offset_zne = (2 * nm_idx - n_models + 1.5) * w
+
+        ax.bar(offset_raw, raw_err, w,
+               yerr=raw_sem, color=colour, alpha=0.85,
+               capsize=3, error_kw={"linewidth": 0.9, "ecolor": "0.3"},
+               label=f"{label} — raw")
+
+        ax.bar(offset_zne, zne_err, w,
+               yerr=zne_sem, color=colour, alpha=0.45, hatch="////",
+               capsize=3, error_kw={"linewidth": 0.9, "ecolor": "0.3"},
+               label=f"{label} — ZNE")
+
+        if raw_err > 0:
+            imp = (raw_err - zne_err) / raw_err * 100
+            ax.text(offset_zne, zne_err + zne_sem + 0.004,
+                    f"${imp:+.0f}\\%$",
+                    ha="center", va="bottom", fontsize=7,
+                    color=colour, fontweight="bold")
+
+    ax.set_xticks([])
+    ax.set_ylabel(r"Relative error $\epsilon$")
+    ax.set_ylim(bottom=0)
+    ax.text(0.5, -0.04, r"$N=4,\ h=1.0,\ L=2$",
+            transform=ax.transAxes, ha="center", va="top",
+            fontsize=8, color="0.4")
+    ax.text(0.02, 0.97, "Solid: raw\nHatched: ZNE",
+            transform=ax.transAxes, fontsize=7, va="top", ha="left",
+            color="0.45")
+    ax.legend(ncol=min(n_models, 3), loc="upper right",
+              handletextpad=0.4, columnspacing=0.8)
+
+    fig.tight_layout()
+    _save(fig, os.path.join(CFG.plots_dir, fname))
+
+
+def plot_zne_improvement_vs_ratio(
+    sweep_data: dict,
+    fname: str = "plot_zne_improvement_vs_ratio.pdf",
+) -> None:
+    """
+    ZNE improvement fraction vs gate-to-readout noise ratio r.
+    Full-width figure — displayed at 0.8\\textwidth in LaTeX.
+    """
+    exact  = sweep_data["exact"]
+    points = sorted(sweep_data.get("ratio_sweep", []), key=lambda p: p["r"])
+
+    if not points:
+        logger.error("plot_zne_improvement_vs_ratio: 'ratio_sweep' is empty.")
+        return
+
+    rs           = np.array([p["r"]          for p in points])
+    raw_energies = np.array([p["raw_energy"] for p in points])
+    zne_energies = np.array([p["zne_energy"] for p in points])
+    raw_errs     = np.abs(raw_energies - exact) / abs(exact)
+    zne_errs     = np.abs(zne_energies - exact) / abs(exact)
+    improvement  = np.where(raw_errs > 1e-10,
+                            (raw_errs - zne_errs) / raw_errs,
+                            0.0)
+
+    imp_sems = None
+    if all("raw_sem" in p and "zne_sem" in p for p in points):
+        raw_sems = np.array([p["raw_sem"] / abs(exact) for p in points])
+        zne_sems = np.array([p["zne_sem"] / abs(exact) for p in points])
+        with np.errstate(divide="ignore", invalid="ignore"):
+            imp_sems = np.sqrt(
+                (zne_sems / np.maximum(raw_errs, 1e-10)) ** 2 +
+                (zne_errs * raw_sems / np.maximum(raw_errs, 1e-10) ** 2) ** 2
+            )
+
+    fig, ax = plt.subplots(figsize=(_TW * 0.72, _FH * 0.90))
+
+    if imp_sems is not None:
+        ax.fill_between(rs, improvement - imp_sems, improvement + imp_sems,
+                        color=_HW_COLOR, alpha=0.15, linewidth=0)
+
+    ax.plot(rs, improvement, color=_HW_COLOR, linewidth=1.4)
+
+    for r_val, device_label in [(0.31, "Brisbane"), (0.51, "Fez")]:
+        ax.axvline(r_val, color="0.40", linestyle="--", linewidth=0.9, zorder=4)
+        yhi = ax.get_ylim()[1] if ax.get_ylim()[1] != 1.0 else 0.97
+        align = "right" if r_val == 0.31 else "left"
+        mult = 0.96 if r_val == 0.31 else 1.04
+        ax.text(r_val * mult, yhi * 0.96,
+                f"{device_label}\n$r={r_val}$",
+                fontsize=7,
+                color="0.35",
+                va="top",
+                ha=align)
+
+    ax.set_xscale("log")
+    ax.set_xlabel(
+        r"Gate-to-readout error ratio  "
+        r"$r = p_{\mathrm{gate,\,2q}}\,/\,p_{\mathrm{readout}}$"
     )
-    if n_cols == 1:
-        axes = [axes]
-
-    fig.suptitle(
-        r"Readout Correction Benefit: $f_\mathrm{discard}^\mathrm{parity}$"
-        r" $- f_\mathrm{discard}^\mathrm{ro+parity}$"
-        "\n(positive = readout correction reduces discards)",
-        fontsize=12, fontweight="bold",
+    ax.set_ylabel("ZNE improvement fraction")
+    ax.yaxis.set_major_formatter(
+        plt.FuncFormatter(lambda y, _: f"{y:.0%}")
     )
 
-    all_deltas = []
-    delta_arrays = []
-    for col_idx, L_val in enumerate(cfg.layers):
-        data = np.full((len(Ns), len(hs)), np.nan)
-        for n_idx, N in enumerate(Ns):
-            for h_idx, h in enumerate(hs):
-                match = [
-                    r for r in all_results
-                    if r["N"] == N and r["h"] == h and r["L"] == L_val
-                ]
-                if match:
-                    r = match[0]
-                    parity_discard = r.get("parity", {}).get("parity_discard", np.nan)
-                    ro_parity_discard = r.get("ro+parity", {}).get("parity_discard", np.nan)
-                    data[n_idx, h_idx] = parity_discard - ro_parity_discard
-        delta_arrays.append(data)
-        all_deltas.extend(data[~np.isnan(data)].tolist())
+    N = sweep_data.get("N", "?")
+    h = sweep_data.get("h", "?")
+    L = sweep_data.get("L", "?")
+    ax.text(0.97, 0.05, rf"$N={N},\ h={h},\ L={L}$",
+            transform=ax.transAxes, fontsize=7.5,
+            ha="right", va="bottom", color="0.4")
 
-    # Symmetric colormap centred at 0
-    abs_max = max(abs(min(all_deltas)), abs(max(all_deltas))) if all_deltas else 0.1
-    abs_max = max(abs_max, 0.02)  # ensure non-zero scale
+    fig.tight_layout()
+    _save(fig, os.path.join(CFG.plots_dir, fname))
 
-    for col_idx, (L_val, data) in enumerate(zip(cfg.layers, delta_arrays)):
-        ax = axes[col_idx]
-        im = ax.imshow(
-            data,
-            vmin=-abs_max, vmax=abs_max,
-            cmap="RdBu",  # blue=positive (readout helps), red=negative
-            aspect="auto",
+
+# ═════════════════════════════════════════════════════════════════════════════
+# §4  Hardware validation plots  (ibm_fez)
+# ═════════════════════════════════════════════════════════════════════════════
+
+def plot_zne_scaling(
+    scale_results: dict,
+    zne_energy:    float,
+    zne_sem:       float,
+    exact:         float,
+    backend_name:  str = "ibm\\_fez",
+    fname:         str = "hardware_zne_scaling.pdf",
+) -> None:
+    """
+    E(λ) vs ZNE noise scale factor on real hardware.
+    Full-width figure — displayed at 0.8\\textwidth in LaTeX.
+    """
+    scales = sorted(scale_results.keys())
+    means  = [scale_results[s]["mean"] for s in scales]
+    sems   = [scale_results[s]["sem"]  for s in scales]
+
+    fig, ax = plt.subplots(figsize=(_TW * 0.62, _FH * 0.85))
+
+    ax.errorbar(scales, means, yerr=sems,
+                fmt="o-", color=_HW_COLOR, linewidth=1.2,
+                markersize=5, capsize=3, capthick=0.8,
+                label=f"Hardware ({backend_name})")
+
+    ax.errorbar([0], [zne_energy], yerr=[zne_sem],
+                fmt="*", color=_HW_COLOR, markersize=8,
+                capsize=3, capthick=0.8, zorder=5,
+                label=f"ZNE (Richardson),  $E_0 = {zne_energy:.4f}$")
+
+    ax.plot([0, scales[0]], [zne_energy, means[0]],
+            color=_HW_COLOR, linestyle="--", linewidth=0.8, alpha=0.50)
+
+    ax.axhline(exact, color="0.20", linestyle=":", linewidth=1.1,
+               label=f"Exact (ED),  $E_0 = {exact:.4f}$")
+
+    ax.set_xlabel(r"Noise scale factor $\lambda$")
+    ax.set_ylabel(r"Energy $\langle H \rangle$ (J)")
+    ax.set_xticks([0] + scales)
+    ax.legend(loc="lower right")
+
+    fig.tight_layout()
+    _save(fig, os.path.join(CFG.plots_dir, fname))
+
+
+def plot_hw_comparison(
+    hw_results:   dict,
+    sim_results:  dict,
+    exact:        float,
+    backend_name: str = "ibm\\_fez",
+    fname:        str = "hardware_benchmark_comparison.pdf",
+) -> None:
+    """
+    Grouped bar chart: FakeFez simulation vs real hardware relative error.
+    Full-width figure — displayed at 0.8\\textwidth in LaTeX.
+    """
+    configs = list(MITIGATION_CONFIGS.keys())
+    x       = np.arange(len(configs))
+    w       = 0.32
+
+    fig, ax = plt.subplots(figsize=(_TW, _FH))
+
+    for i, cfg_name in enumerate(configs):
+        colour = _STYLE[cfg_name]["color"]
+
+        sim_err = sim_results.get(cfg_name, {}).get("rel_err", np.nan)
+        if not np.isnan(sim_err):
+            ax.bar(x[i] - w / 2, sim_err, w,
+                   color=colour, alpha=0.38,
+                   edgecolor=colour, linewidth=0.6)
+
+        hw_err = hw_results.get(cfg_name, {}).get("rel_err", np.nan)
+        if not np.isnan(hw_err):
+            ax.bar(x[i] + w / 2, hw_err, w,
+                   color=colour, alpha=0.90,
+                   edgecolor="0.25", linewidth=0.6)
+
+    sim_proxy = mpatches.Patch(facecolor="0.60", alpha=0.38,
+                               edgecolor="0.60", linewidth=0.6,
+                               label="Simulator (FakeFez)")
+    hw_proxy  = mpatches.Patch(facecolor="0.25", alpha=0.90,
+                               edgecolor="0.25", linewidth=0.6,
+                               label=f"Hardware ({backend_name})")
+    ax.legend(handles=[sim_proxy, hw_proxy], loc="upper left")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([_LABELS[c] for c in configs], rotation=30, ha="right")
+    ax.set_ylabel(r"Relative error $\epsilon$")
+    ax.set_ylim(bottom=0)
+
+    fig.tight_layout()
+    _save(fig, os.path.join(CFG.plots_dir, fname))
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# §5  Master execution block
+# ═════════════════════════════════════════════════════════════════════════════
+
+def generate_all_plots() -> None:
+    """
+    Load all data from disk and generate every figure.
+    """
+
+    BRISBANE_DIR   = "FakeBrisbane_results_updated_skip_rz"
+    FEZ_DIR        = "FakeFez_results_updated_skip_rz"
+    ZNE_STUDY_DIR  = "results_zne_study"
+    HW_DIR         = "results_hardware"
+
+    # ── Section A: FakeBrisbane benchmark ────────────────────────────────────
+    brisbane_results = load_benchmark_results(BRISBANE_DIR)
+    plot_all_benchmark(brisbane_results, device_tag="brisbane")
+
+    # ── Section B: FakeFez benchmark ─────────────────────────────────────────
+    fez_results = load_benchmark_results(FEZ_DIR)
+    plot_all_benchmark(fez_results, device_tag="fez")
+
+    # ── Section C: ZNE noise study ────────────────────────────────────────────
+
+    _MODEL_LABELS = {
+        "readout_dom": "Readout-dominated",
+        "balanced": "Balanced",
+        "gate_dom": "Gate-dominated",
+    }
+
+    noise_comp_path = os.path.join(ZNE_STUDY_DIR, "zne_study_N2_h1.0_L2.json")
+    if os.path.exists(noise_comp_path):
+        with open(noise_comp_path) as f:
+            raw = json.load(f)
+
+        _META_KEYS = {"N", "h", "L", "exact"}
+        exact_nc = raw.get("exact", 0.0)
+
+        nm_data = []
+        for key, val in raw.items():
+            if key in _META_KEYS or not isinstance(val, dict):
+                continue
+            entry = {
+                "label": _MODEL_LABELS.get(key, key.replace("_", " ").title()),
+                "r": val.get("r", float("nan")),
+                "raw_energy": val["raw_energy"],
+                "raw_sem": val["scale_sems"][0] if val.get("scale_sems") else 0.0,
+                "zne_energy": val["extrapolated"],
+                "zne_sem": val.get("extrap_sem", 0.0),
+                "exact": exact_nc,
+            }
+            nm_data.append(entry)
+
+        if nm_data:
+            plot_zne_noise_comparison(nm_data)
+        else:
+            logger.warning("No noise model entries found in %s.", noise_comp_path)
+    else:
+        logger.warning("Missing %s — skipping plot_zne_noise_comparison.", noise_comp_path)
+
+    sweep_path = os.path.join(ZNE_STUDY_DIR, "zne_ratio_sweep_N4_h1.0_L2.json")
+    if os.path.exists(sweep_path):
+        with open(sweep_path) as f:
+            raw = json.load(f)
+
+        _META_KEYS = {"N", "h", "L", "exact"}
+        exact_sw = raw.get("exact", 0.0)
+
+        ratio_sweep = []
+        for key, val in raw.items():
+            if key in _META_KEYS or not isinstance(val, dict):
+                continue
+            ratio_sweep.append({
+                "r": val["r"],
+                "raw_energy": val["raw_energy"],
+                "raw_sem": val["scale_sems"][0] if val.get("scale_sems") else 0.0,
+                "zne_energy": val["extrapolated"],
+                "zne_sem": val.get("extrap_sem", 0.0),
+            })
+
+        sweep_data = {
+            "N": raw.get("N", 4),
+            "h": raw.get("h", 1.0),
+            "L": raw.get("L", 2),
+            "exact": exact_sw,
+            "ratio_sweep": ratio_sweep,
+        }
+        plot_zne_improvement_vs_ratio(sweep_data)
+    else:
+        logger.warning("Missing %s — skipping plot_zne_improvement_vs_ratio.",
+                       sweep_path)
+
+    # ── Section D: Real hardware ──────────────────────────────────────────────
+
+    scaling_path = os.path.join(HW_DIR, "zne_scaling_N4_h1.0_L2.json")
+    if os.path.exists(scaling_path):
+        with open(scaling_path) as f:
+            d = json.load(f)
+        scale_results = {int(k): v for k, v in d["scale_results"].items()}
+        plot_zne_scaling(
+            scale_results = scale_results,
+            zne_energy    = d["zne_energy"],
+            zne_sem       = d["zne_sem"],
+            exact         = d["exact"],
+            backend_name  = d.get("backend", "ibm\\_fez"),
         )
-        for n_idx in range(len(Ns)):
-            for h_idx in range(len(hs)):
-                val = data[n_idx, h_idx]
-                if not np.isnan(val):
-                    ax.text(
-                        h_idx, n_idx,
-                        f"{val:+.2f}",
-                        ha="center", va="center",
-                        fontsize=9, fontweight="bold",
-                        color="white" if abs(val) > 0.6 * abs_max else "black",
-                    )
-        ax.set_xticks(range(len(hs)))
-        ax.set_xticklabels([f"h={h}" for h in hs], fontsize=9)
-        ax.set_yticks(range(len(Ns)))
-        ax.set_yticklabels([f"N={N}" for N in Ns], fontsize=9)
-        ax.set_title(f"Depth  L = {L_val}", fontsize=11)
+    else:
+        logger.warning("Missing %s — skipping plot_zne_scaling.", scaling_path)
 
-    fig.subplots_adjust(right=0.88)
-    cbar_ax = fig.add_axes([0.91, 0.15, 0.02, 0.7])
-    cbar = fig.colorbar(im, cax=cbar_ax)
-    cbar.set_label(r"$\Delta f_\mathrm{discard}$  (parity $-$ ro+parity)", fontsize=9)
+    hw_bench_path = os.path.join(HW_DIR, "benchmark_N4_h1.0_L2.json")
+    fez_sim_path  = os.path.join(FEZ_DIR, "N4_h1.0_L2.json")
 
-    plt.savefig(os.path.join(CFG.plots_dir, fname), bbox_inches="tight", dpi=150)
-    plt.show()
-    logger.info("Saved: %s", fname)
+    if os.path.exists(hw_bench_path) and os.path.exists(fez_sim_path):
+        with open(hw_bench_path) as f:
+            hw_data = json.load(f)
+        with open(fez_sim_path) as f:
+            sim_data = json.load(f)
+
+        hw_results  = hw_data.get("results", hw_data)
+        sim_results = {
+            c: {"rel_err": sim_data[c]["rel_err"]}
+            for c in MITIGATION_CONFIGS if c in sim_data
+        }
+        plot_hw_comparison(
+            hw_results   = hw_results,
+            sim_results  = sim_results,
+            exact        = hw_data.get("exact", sim_data.get("exact", 0.0)),
+            backend_name = hw_data.get("backend", "ibm\\_fez"),
+        )
+    else:
+        for p in [hw_bench_path, fez_sim_path]:
+            if not os.path.exists(p):
+                logger.warning("Missing %s — skipping plot_hw_comparison.", p)
+
+    logger.info("All plots complete.  Output: %s/", CFG.plots_dir)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(message)s",
+        datefmt="%H:%M:%S",
+    )
+    generate_all_plots()

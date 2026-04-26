@@ -10,7 +10,7 @@ Import this in every other module:
 from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
-
+from qiskit_ibm_runtime.fake_provider import FakeBrisbane, FakeFez
 
 @dataclass(frozen=True)
 class BenchmarkConfig:
@@ -80,7 +80,7 @@ class BenchmarkConfig:
     # 3 points enables quadratic Richardson extrapolation.
 
     # --- Infrastructure ---
-    results_dir: str = "results"
+    results_dir: str = "results_test"
     # Directory for incremental JSON result files.
     plots_dir: str = "plots"
     # Directory for incremental PDF plots files.
@@ -92,8 +92,13 @@ class BenchmarkConfig:
     # Aer's internal OpenMP thread count per process. Set to 1 when using
     # Python multiprocessing to avoid CPU core contention.
 
-    # The standard basis gates for most IBM Quantum systems (Falcon/Eagle), including Brisbane
-    _IBM_BASIS_GATES: list[str] = field(default_factory=lambda: ['cx', 'id', 'rz', 'sx', 'x'])
+    backend = FakeBrisbane()
+
+    # The standard basis gates for most IBM Quantum systems (Falcon/Eagle), including Brisbane, or Fez (Heron, cz)
+    if backend == FakeBrisbane():
+        _IBM_BASIS_GATES: list[str] = field(default_factory=lambda: ['cx', 'id', 'rz', 'sx', 'x'])
+    else:
+        _IBM_BASIS_GATES: list[str] = field(default_factory=lambda: ['cz', 'id', 'rz', 'sx', 'x'])
 
 
 

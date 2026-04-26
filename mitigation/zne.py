@@ -38,6 +38,8 @@ from qiskit import QuantumCircuit
 
 logger = logging.getLogger(__name__)
 
+# Virtual gates on IBM hardware — zero physical error, do not fold
+_VIRTUAL_GATES = {"rz", "id", "delay"}
 
 def apply_zne_folding(qc: QuantumCircuit, scale: int) -> QuantumCircuit:
     """
@@ -100,6 +102,11 @@ def apply_zne_folding(qc: QuantumCircuit, scale: int) -> QuantumCircuit:
         # Skip non-unitary instructions: measurements, resets, barriers.
         # These do not have unitary inverses and should not be folded.
         if inst.operation.name in ("barrier", "measure", "reset"):
+            folded.append(inst)
+            continue
+
+            # Skip virtual/noiseless gates
+        if inst.operation.name in _VIRTUAL_GATES:
             folded.append(inst)
             continue
 

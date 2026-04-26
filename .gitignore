@@ -19,7 +19,18 @@ env/
 # Simulation outputs — do not commit
 results/
 plots/
+FakeFez_results/
+FakeFez_plots/
 results_zne_study/
+results_hardware/
+FakeBrisbane_plots_updated_skip_rz/
+FakeBrisbane_results_updated_skip_rz/
+FakeFez_plots_updated_skip_rz/
+FakeFez_results_updated_skip_rz/
+Final_Plots/
+Poster_Plots/
+replotting.py
+Plots_poster.py
 
 # OS files
 .DS_Store

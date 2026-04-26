@@ -10,7 +10,7 @@ This script:
     1. Checks whether results already exist on disk (from a previous run).
        If they do, asks whether to reload or rerun.
     2. Runs the full benchmark sweep (or loads from disk).
-    3. Generates all four plots.
+    3. Generates all plots.
     4. Prints a summary table to the console.
 
 Result management:
@@ -56,16 +56,7 @@ logger = logging.getLogger(__name__)
 
 from config import CFG, INDIVIDUAL_CONFIGS
 from benchmark import run_benchmark, load_results
-from plotting import (
-    plot_relative_error,
-    plot_absolute_energy,
-    plot_convergence,
-    plot_cost_vs_error,
-    plot_error_scaling,
-    plot_parity_discard,
-    plot_parity_discard_comparison,
-    plot_parity_discard_delta,
-)
+from plotting import generate_all_plots
 
 
 def print_summary_table(all_results: list[dict]) -> None:
@@ -104,21 +95,7 @@ def main() -> None:
 
     logger.info("Generating plots...")
 
-    # Plot 1: individual methods only
-    plot_relative_error(all_results, CFG,
-                        configs_to_show=INDIVIDUAL_CONFIGS,
-                        fname="plot_relative_error_individual.pdf")
-    # Plot 2: all 8 methods
-    plot_relative_error(all_results, CFG,
-                        fname="plot_relative_error_all.pdf")
-
-    plot_absolute_energy(all_results, CFG)
-    plot_convergence(all_results, CFG)
-    plot_cost_vs_error(all_results, CFG)
-    plot_error_scaling(all_results, CFG)
-    plot_parity_discard(all_results, CFG)
-    plot_parity_discard_comparison(all_results, CFG)
-    plot_parity_discard_delta(all_results, CFG)
+    generate_all_plots()
 
     logger.info("Done.")
 

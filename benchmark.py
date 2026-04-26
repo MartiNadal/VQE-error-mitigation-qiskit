@@ -20,7 +20,7 @@ from multiprocessing import Pool
 import numpy as np
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel
-from qiskit_ibm_runtime.fake_provider import FakeBrisbane
+from qiskit_ibm_runtime.fake_provider import FakeBrisbane, FakeFez
 
 from config import CFG, MITIGATION_CONFIGS
 from hamiltonian import get_exact_energy
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_simulator(threads: int = CFG.max_parallel_threads_aer) -> AerSimulator:
-    backend     = FakeBrisbane()
+    backend     = CFG.backend
     noise_model = NoiseModel.from_backend(backend)
     return AerSimulator(noise_model=noise_model, max_parallel_threads=threads)
 
@@ -178,6 +178,7 @@ def run_single_combination(args: tuple) -> dict:
     result = {
         "N": N, "h": h, "L": L,
         "exact": exact,
+        "best_params": best_params.tolist(),
         "convergence_raw": convergence_raw,
         "convergence_rel": convergence_rel,   # normalised for plotting
         "elapsed_s": elapsed,
